@@ -57,6 +57,8 @@ async function run (fns, context) {
   const result = await write(client, payload.Item)
   recordEnd('write')
 
+  report.end = Date.now()
+
   return { report, result }
 }
 

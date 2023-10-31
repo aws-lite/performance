@@ -18,6 +18,9 @@
     "eslint": "^8.52.0"
   },
   "eslintConfig": {
-    "extends": "@architect/eslint-config"
+    "extends": "@architect/eslint-config",
+    "rules": {
+      "global-require": "off"
+    }
   }
 }
