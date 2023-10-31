@@ -5,16 +5,18 @@
     "start": "arc sandbox"
   },
   "dependencies": {
-    "@architect/architect": "^10.15.1",
+    "@architect/architect": "^10.16.0",
     "@aws-lite/client": "latest",
     "@aws-lite/dynamodb": "latest",
     "@aws-lite/lambda": "latest",
     "@aws-lite/ssm": "latest",
     "@aws-sdk/client-dynamodb": "latest",
+    "@aws-sdk/lib-dynamodb": "^3.438.0",
     "aws-sdk": "latest"
   },
   "devDependencies": {
     "@architect/eslint-config": "^2.1.2",
+    "esbuild": "^0.19.5",
     "eslint": "^8.52.0"
   },
   "eslintConfig": {
