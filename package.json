@@ -1,0 +1,21 @@
+{
+  "scripts": {
+    "start": "arc sandbox"
+  },
+  "dependencies": {
+    "@architect/architect": "^10.15.1",
+    "@aws-lite/client": "latest",
+    "@aws-lite/dynamodb": "latest",
+    "@aws-lite/lambda": "latest",
+    "@aws-lite/ssm": "latest",
+    "@aws-sdk/client-dynamodb": "latest",
+    "aws-sdk": "latest"
+  },
+  "devDependencies": {
+    "@architect/eslint-config": "^2.1.2",
+    "eslint": "^8.52.0"
+  },
+  "eslintConfig": {
+    "extends": "@architect/eslint-config"
+  }
+}
