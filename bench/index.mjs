@@ -1,7 +1,7 @@
 import { names as lambdae } from '../src/plugins/lambdas.mjs'
 import awsLite from '@aws-lite/client'
-const maxMemRe = /(?<=(Max Memory Used: ))(\d.)+(?=( MB))/g
-const coldstartRe = /(?<=(Init Duration: ))(\d.)+(?=( ms))/g
+const maxMemRe = /(?<=(Max Memory Used: ))[\d.]+(?=( MB))/g
+const coldstartRe = /(?<=(Init Duration: ))[\d.]+(?=( ms))/g
 const env = process.env.ARC_ENV === 'production' ? 'Production' : 'Staging'
 
 const runs = 5 // TODO: increase to a statistically significant quantity of runs
@@ -124,7 +124,7 @@ async function waitFor (params) {
   if (LastUpdateStatus !== 'Successful' && params.tries <= 30) {
     params.tries++
     await new Promise(res => setTimeout(res, 1000))
-    await waitFor({ aws, FunctionName })
+    await waitFor({ aws, FunctionName, tries: params.tries })
   }
   else throw Error(`Lambda did not successfully update after ${params.tries} tries: ${FunctionName}`)
 }

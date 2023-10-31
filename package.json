@@ -1,5 +1,7 @@
 {
   "scripts": {
+    "bench": "node bench/index.mjs",
+    "lint": "eslint --fix .",
     "start": "arc sandbox"
   },
   "dependencies": {
