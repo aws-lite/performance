@@ -1,8 +1,14 @@
+import { writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { names as lambdae } from '../src/plugins/lambdas.mjs'
+import parseResults from './results.mjs'
 import awsLite from '@aws-lite/client'
+
 const maxMemRe = /(?<=(Max Memory Used: ))[\d.]+(?=( MB))/g
 const coldstartRe = /(?<=(Init Duration: ))[\d.]+(?=( ms))/g
+
 const env = process.env.ARC_ENV === 'production' ? 'Production' : 'Staging'
+const writeResults = false
 
 const runs = 5 // TODO: increase to a statistically significant quantity of runs
 const stats = {}
@@ -91,7 +97,14 @@ async function main () {
       })
     })
 
-    await Promise.all(operations)
+    try {
+      await Promise.all(operations)
+    }
+    catch (err) {
+      console.log('Error, terminating benchmark run!')
+      console.log(err)
+      process.exit(1)
+    }
     console.log(`[Benchmark] Run ${i} completed in ${Date.now() - runStart}ms`)
   }
   console.log(`[Benchmark] Finished in ${(Date.now() - start) / 1000} seconds`)
@@ -103,6 +116,12 @@ async function main () {
   }))
   const batch = { RequestItems: { [resultsTable]: PutRequestItems } }
   await aws.DynamoDB.BatchWriteItem(batch)
+
+  if (writeResults) {
+    writeFileSync(join('bench', 'results.json'), JSON.stringify(stats, null, 2))
+  }
+
+  parseResults(stats)
 }
 main()
 

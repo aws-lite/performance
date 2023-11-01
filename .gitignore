@@ -1,4 +1,5 @@
 *-bundle.js
 node_modules/
+results.json
 sam.*
 scratch/

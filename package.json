@@ -12,7 +12,8 @@
     "@aws-lite/ssm": "latest",
     "@aws-sdk/client-dynamodb": "latest",
     "@aws-sdk/lib-dynamodb": "^3.438.0",
-    "aws-sdk": "latest"
+    "aws-sdk": "latest",
+    "percentile": "^1.6.0"
   },
   "devDependencies": {
     "@architect/eslint-config": "^2.1.2",
