@@ -1,11 +1,12 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { names } from '../src/plugins/lambdas.mjs'
 import { join } from 'node:path'
 import percentile from 'percentile'
 
 async function parseResults (results) {
   const start = Date.now()
-  results = results || JSON.parse(readFileSync(join('bench', 'results.json')))
+  const resultsFile = join('bench', 'results.json')
+  results = results || (existsSync(resultsFile) && JSON.parse(readFileSync(resultsFile)))
 
   // Stats
   const coldstart = {}
@@ -41,7 +42,6 @@ async function parseResults (results) {
     memory,
   })
 }
-parseResults()
 
 function parseBenchRuns (acc, results, mapFn, skipControl) {
   names.forEach(name => {
