@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { names } from '../src/plugins/lambdas.mjs'
+import generateCharts from './generate-charts.mjs'
 import { join } from 'node:path'
 import percentile from 'percentile'
 
@@ -32,7 +33,10 @@ async function parseResults (results) {
 
   console.log(`[Stats] Parsed benchmark statistics in ${Date.now() - start}ms`)
 
-  console.log(`[Stats] Detailed stats from benchmark run:`, {
+  const runs = results.control.length
+  const metricToGraph = 'p95'
+  const data = {}
+  Object.entries({
     coldstart,
     totalTime,
     importDep,
@@ -40,7 +44,14 @@ async function parseResults (results) {
     read,
     write,
     memory,
+  }).forEach(([ name, values ]) => {
+    data[name] = Object.values(values).reduce((a, b) => {
+      a.push(Number(b[metricToGraph]))
+      return a
+    }, [])
   })
+
+  generateCharts({ data, metricToGraph, runs })
 }
 
 function parseBenchRuns (acc, results, mapFn, skipControl) {
@@ -56,6 +67,7 @@ function parseBenchRuns (acc, results, mapFn, skipControl) {
     acc[name].p25 = percentile(25, all).toFixed(2)
     acc[name].p50 = percentile(50, all).toFixed(2)
     acc[name].p90 = percentile(90, all).toFixed(2)
+    acc[name].p95 = percentile(95, all).toFixed(2)
     acc[name].p99 = percentile(99, all).toFixed(2)
   })
 }
@@ -71,3 +83,7 @@ function getStandardDeviation (arr) {
 }
 
 export default parseResults
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  parseResults()
+}

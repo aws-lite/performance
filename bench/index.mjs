@@ -1,7 +1,7 @@
 import { writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { names as lambdae } from '../src/plugins/lambdas.mjs'
-import parseResults from './results.mjs'
+import parseResults from './parse-results.mjs'
 import awsLite from '@aws-lite/client'
 
 const maxMemRe = /(?<=(Max Memory Used: ))[\d.]+(?=( MB))/g
@@ -10,7 +10,7 @@ const coldstartRe = /(?<=(Init Duration: ))[\d.]+(?=( ms))/g
 const env = process.env.ARC_ENV === 'production' ? 'Production' : 'Staging'
 const writeResults = false
 
-const runs = 5 // TODO: increase to a statistically significant quantity of runs
+const runs = 10 // TODO: increase to a statistically significant quantity of runs
 const stats = {}
 
 async function main () {
