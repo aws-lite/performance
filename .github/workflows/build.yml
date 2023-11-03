@@ -1,0 +1,96 @@
+name: Node CI
+
+# Push tests pushes; PR tests merges
+on: [ push, pull_request ]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  # Test the build
+  build:
+    # Setup
+    runs-on: ubuntu-latest
+
+    # Go
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+
+      - name: Env
+        shell: bash
+        run: |
+          echo "Event name: ${{ github.event_name }}"
+          echo "Git ref:    ${{ github.ref }}"
+          echo "GH actor:   ${{ github.actor }}"
+          echo "SHA:        ${{ github.sha }}"
+          VER=`node --version`; echo "Node ver:   $VER"
+          VER=`npm --version`; echo "npm ver:    $VER"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Hydrate
+        run: npx arc hydrate
+
+      - name: Test
+        run: npm test
+
+  # Assuming all that went fine (and it's main): deploy!
+  deploy:
+    # Setup
+    needs: build
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+
+    # Go
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Staging deploy
+        if: github.ref == 'refs/heads/main'
+        run: npx arc deploy --staging
+        env:
+          CI: true
+          AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+
+      - name: Production deploy
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: npx arc deploy --production
+        env:
+          CI: true
+          AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+
+      - name: Staging metrics
+        if: github.ref == 'refs/heads/main'
+        run: npm run bench
+        env:
+          CI: true
+          AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+
+      - name: Notify
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "deploy build"
+          color: 0x222222
+          username: GitHub Actions
