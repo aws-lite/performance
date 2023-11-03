@@ -1,4 +1,4 @@
-import { writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { names as lambdae } from '../src/plugins/lambdas.mjs'
 import parseResults from './parse-results.mjs'
@@ -10,6 +10,7 @@ const coldstartRe = /(?<=(Init Duration: ))[\d.]+(?=( ms))/g
 const region = process.env.AWS_PROFILE || 'us-west-2'
 const env = process.env.ARC_ENV === 'production' ? 'Production' : 'Staging'
 const writeResults = true
+const tmp = join(process.cwd(), 'tmp')
 
 const runs = 10 // TODO: increase to a statistically significant quantity of runs
 const stats = {}
@@ -116,7 +117,8 @@ async function main () {
   await aws.DynamoDB.BatchWriteItem(batch)
 
   if (writeResults) {
-    writeFileSync(join(process.cwd(), 'tmp', 'latest-results.json'), JSON.stringify(stats, null, 2))
+    if (!existsSync(tmp)) mkdirSync(tmp)
+    writeFileSync(join(tmp, 'latest-results.json'), JSON.stringify(stats, null, 2))
   }
 
   parseResults({ results: stats, region })
