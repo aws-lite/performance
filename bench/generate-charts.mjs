@@ -109,7 +109,7 @@ export default async function generateCharts ({ data, metricToGraph, region, run
     config.options.plugins.title.text = title
     if (options) config.options = { ...config.options, ...options }
     chart.setConfig(config)
-    chart.toFile(join(tmp, filename + '.png'))
+    await chart.toFile(join(tmp, filename + '.png'))
 
     // Now run it again in dark mode
     const light = '#E6EDF3'
@@ -128,7 +128,7 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       }
     }
     chart.setConfig(config)
-    chart.toFile(join(tmp, filename + '-dark.png'))
+    await chart.toFile(join(tmp, filename + '-dark.png'))
 
     console.log(`[Charts] Graphed: '${title}' in ${Date.now() - start}ms`)
   }

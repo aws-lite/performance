@@ -56,7 +56,6 @@ async function main () {
         if (!stats[name]) stats[name] = []
         async function bench () {
           try {
-
             await updateAndWait({ aws, FunctionName: name })
             const invoke = await aws.Lambda.Invoke({
               FunctionName: name,
