@@ -1,12 +1,15 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { names } from '../src/plugins/lambdas.mjs'
 import generateCharts from './generate-charts.mjs'
 import { join } from 'node:path'
 import percentile from 'percentile'
 
+const writeResults = true
+
 async function parseResults (results) {
   const start = Date.now()
   const resultsFile = join(process.cwd(), 'tmp', 'latest-results.json')
+  const resultsParsedFile = join(process.cwd(), 'tmp', 'latest-results-parsed.json')
   results = results || (existsSync(resultsFile) && JSON.parse(readFileSync(resultsFile)))
 
   // Stats
@@ -36,10 +39,7 @@ async function parseResults (results) {
 
   console.log(`[Stats] Parsed benchmark statistics in ${Date.now() - start}ms`)
 
-  const runs = results.control.length
-  const metricToGraph = 'p95'
-  const data = {}
-  Object.entries({
+  const parsed = {
     coldstart,
     executionTime,
     totalTime,
@@ -48,7 +48,16 @@ async function parseResults (results) {
     read,
     write,
     memory,
-  }).forEach(([ name, values ]) => {
+  }
+
+  if (writeResults) {
+    writeFileSync(resultsParsedFile, JSON.stringify(parsed, null, 2))
+  }
+
+  const runs = results.control.length
+  const metricToGraph = 'p95'
+  const data = {}
+  Object.entries(parsed).forEach(([ name, values ]) => {
     data[name] = Object.values(values).reduce((a, b) => {
       // Establish baseline memory footprint from the control
       let num = name === 'memory'

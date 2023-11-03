@@ -93,7 +93,9 @@ Peak memory consumption values are less the equivalent peak memory of the contro
 
 ### Download benchmark data
 
-Raw data from the benchmark runs that produced the above graphs can be [downloaded here](https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/latest-results.json).
+Raw data from the benchmark runs that produced the above graphs can be downloaded here
+- [Raw, unparsed results](https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/latest-results.json).
+- [Parsed results](https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/latest-results-parsed.json).
 
 
 ## Methodology
