@@ -147,6 +147,21 @@ All scenario Lambdas share the same configuration: `arm64` architecture; 1024 MB
 All Lambdas use `nodejs18.x` with the exception of the raw (provided) AWS SDK v2, which is only available provided in the `nodejs16.x` Lambda image.
 
 
+### AWS SDK v2
+
+AWS is deprecating AWS SDK v2 (and the Lambda Node.js runtimes that use it) in late 2023. Moving forward, developers will have to decide from the following options:
+
+- Migrate to a new SDK (such as `aws-lite` or AWS SDK v3)
+- Bundle AWS SDK v2 in its entirety and ship that as a (very large) vendored dependency
+- Bundle individual AWS SDK v2 clients, and ship those as vendored dependencies
+
+Putting aside the fact that AWS SDK v2 is deprecated and [may only receive critical security updates for ~12mo](https://docs.aws.amazon.com/sdkref/latest/guide/maint-policy.html), due to performance concerns we strongly advise against bundling the entirety of AWS SDK v2 as a vendored dependency.
+
+Because we advise against bundling the entire v2 SDK, from a performance testing methodology perspective all bundled (read: not provided) AWS SDK v2 Lambda scenarios represented in this suite of metrics make use of individual bundled clients (e.g. `aws-sdk/clients/dynamodb`).
+
+Once AWS finally deprecates `nodejs16.x`, the `aws-sdk-v2-bundled` Lambda scenario may be deprecated here as well, as we may no longer be able to publish changes to the application via CloudFormation.
+
+
 ### AWS regions
 
 The intention of this dataset is to provide an apples-to-apples comparison of the time and resource costs associated with JavaScript AWS SDKs. This can be reasonably accomplished within a single AWS region.
