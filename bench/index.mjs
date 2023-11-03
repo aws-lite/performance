@@ -8,7 +8,7 @@ const maxMemRe = /(?<=(Max Memory Used: ))[\d.]+(?=( MB))/g
 const coldstartRe = /(?<=(Init Duration: ))[\d.]+(?=( ms))/g
 
 const env = process.env.ARC_ENV === 'production' ? 'Production' : 'Staging'
-const writeResults = false
+const writeResults = true
 
 const runs = 10 // TODO: increase to a statistically significant quantity of runs
 const stats = {}
@@ -118,7 +118,7 @@ async function main () {
   await aws.DynamoDB.BatchWriteItem(batch)
 
   if (writeResults) {
-    writeFileSync(join('bench', 'results.json'), JSON.stringify(stats, null, 2))
+    writeFileSync(join(process.cwd(), 'tmp', 'latest-results.json'), JSON.stringify(stats, null, 2))
   }
 
   parseResults(stats)

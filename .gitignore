@@ -1,7 +1,5 @@
 *-bundle.js
-bench/*.json
 node_modules/
-results.json
 sam.*
 scratch/
 tmp/

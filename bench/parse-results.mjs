@@ -6,7 +6,7 @@ import percentile from 'percentile'
 
 async function parseResults (results) {
   const start = Date.now()
-  const resultsFile = join('bench', 'results.json')
+  const resultsFile = join(process.cwd(), 'tmp', 'latest-results.json')
   results = results || (existsSync(resultsFile) && JSON.parse(readFileSync(resultsFile)))
 
   // Stats
@@ -15,6 +15,9 @@ async function parseResults (results) {
 
   const totalTime = {}
   parseBenchRuns(totalTime, results, ({ coldstart, start, end }) => coldstart + (end - start))
+
+  const executionTime = {}
+  parseBenchRuns(executionTime, results, ({ start, end }) => end - start)
 
   const importDep = {}
   parseBenchRuns(importDep, results, ({ importDep }) => importDep.time, true)
@@ -38,6 +41,7 @@ async function parseResults (results) {
   const data = {}
   Object.entries({
     coldstart,
+    executionTime,
     totalTime,
     importDep,
     instantiate,
@@ -46,10 +50,16 @@ async function parseResults (results) {
     memory,
   }).forEach(([ name, values ]) => {
     data[name] = Object.values(values).reduce((a, b) => {
-      a.push(Number(b[metricToGraph]))
+      // Establish baseline memory footprint from the control
+      let num = name === 'memory'
+        ? Number(b[metricToGraph]) - Number(memory.control[metricToGraph])
+        : Number(b[metricToGraph])
+      a.push(num)
       return a
     }, [])
   })
+
+  console.log(`[Stats] Raw data:`, data)
 
   generateCharts({ data, metricToGraph, runs })
 }

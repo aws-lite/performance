@@ -11,6 +11,10 @@ timeout 30
 
 @plugins
 lambdas
+architect/plugin-storage-public
+
+@storage-public
+benchmark-assets
 
 @tables
 benchmark-results

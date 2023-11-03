@@ -1,6 +1,9 @@
-import { existsSync, mkdirSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import ChartJsImage from 'chartjs-to-image'
+import awsLite from '@aws-lite/client'
+
+const env = process.env.ARC_ENV === 'production' ? 'Production' : 'Staging'
 
 export default async function generateCharts ({ data, metricToGraph, runs }) {
   console.log('[Charts] Generating charts')
@@ -23,33 +26,39 @@ export default async function generateCharts ({ data, metricToGraph, runs }) {
     coldstart: {
       title: `Coldstart latency (ms)`,
       filename: 'coldstart',
-      includeControl: true,
     },
     importDep: {
       title: 'Import / require the SDK (ms)',
       filename: 'import-dep',
+      noControlTest: true,
     },
     instantiate: {
       title: 'Instantiate a client (ms)',
       filename: 'instantiate',
+      noControlTest: true,
     },
     read: {
       title: 'DynamoDB - read one 100KB row (ms)',
       filename: 'read',
+      noControlTest: true,
     },
     write: {
       title: 'DynamoDB - write one 100KB row (ms)',
       filename: 'write',
+      noControlTest: true,
     },
     memory: {
-      title: 'Peak memory consumption (MB)',
+      title: 'Peak memory consumption over Lambda baseline (MB)',
       filename: 'memory',
-      includeControl: true,
+      excludeControl: true,
+    },
+    executionTime: {
+      title: 'Time to respond, not including coldstart (ms)',
+      filename: 'execution-time',
     },
     totalTime: {
-      title: 'Total execution time including coldstart (ms)',
+      title: 'Total time to respond, including coldstart (ms)',
       filename: 'total-time',
-      includeControl: true,
     },
   }
 
@@ -75,21 +84,24 @@ export default async function generateCharts ({ data, metricToGraph, runs }) {
 
   for (const [ name, metric ] of Object.entries(charts)) {
     const start = Date.now()
-    const { title, filename, options, includeControl = false } = metric
+    const { title, filename, options, noControlTest, excludeControl } = metric
     const chart = new ChartJsImage()
     chart
       .setChartJsVersion('4')
       .setWidth(800)
       .setDevicePixelRatio(2.0)
 
-    const maybeHideControl = a => includeControl ? a : a.slice(1)
+    // noControlTest - do not expect values for control, as they weren't included
+    // excludeControl - control values are included and will be used outside the charts, but should be ignored in charts
+    // TODO this can prob also be improved by inspecting the lambdas plugin to see whether a control test was included
+    const removeControl = arr => excludeControl || noControlTest ? arr.slice(1) : arr
     const config = {
       type: 'bar',
       data: {
-        labels: maybeHideControl(labels),
+        labels: removeControl(labels),
         datasets: [ {
-          data: data[name],
-          backgroundColor: maybeHideControl(backgroundColor),
+          data: excludeControl ? data[name].slice(1) : data[name],
+          backgroundColor: removeControl(backgroundColor),
         } ],
       },
       options: getOptions(),
@@ -101,7 +113,7 @@ export default async function generateCharts ({ data, metricToGraph, runs }) {
 
     // Now run it again in dark mode
     const light = '#E6EDF3'
-    const grid = '#21262D'
+    const grid = '#888888'
     chart.setBackgroundColor('#00000000')
     config.options.plugins.title.color = light
     config.options.plugins.subtitle.color = light
@@ -119,5 +131,26 @@ export default async function generateCharts ({ data, metricToGraph, runs }) {
     chart.toFile(join(tmp, filename + '-dark.png'))
 
     console.log(`[Charts] Graphed: '${title}' in ${Date.now() - start}ms`)
+  }
+
+  const aws = await awsLite({
+    profile: 'openjsf',
+    region: 'us-west-2',
+  })
+  const { Parameter } = await aws.SSM.GetParameter({ Name: `/Benchmark${env}/storage-public/benchmark-assets` })
+  const Bucket = Parameter.Value
+
+  const files = readdirSync(tmp)
+  for (const Key of files) {
+    // TODO set caching for a little while once things settle
+    const CacheControl = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
+    await aws.S3.PutObject({
+      Bucket,
+      Key,
+      File: join(tmp, Key),
+      CacheControl,
+      ContentType: Key.endsWith('.png') ? 'image/png' : 'application/json',
+    })
+    console.log(`[Charts] Published ${Key} to S3`)
   }
 }
