@@ -11,6 +11,14 @@ This repo benchmarks `aws-lite`, `aws-sdk` (v2), and `@aws-sdk` (v3) as unbundle
 - [Latest benchmark results](#latest-benchmark-results)
   - [Download benchmark data](#download-benchmark-data)
 - [Methodology](#methodology)
+  - [General methodology](#general-methodology)
+  - [Implementation](#implementation)
+    - [Deployment phase](#deployment-phase)
+    - [Testing phase](#testing-phase)
+    - [Publishing phase](#publishing-phase)
+  - [Lambda configuration](#lambda-configuration)
+  - [AWS regions](#aws-regions)
+  - [Bundling](#bundling)
 - [Reproduction](#reproduction)
 
 ---
@@ -21,7 +29,7 @@ The benchmarks below represent timing and memory for a basic roundtrip operation
 
 Each test Lambda has only and exactly what it requires to complete the benchmark; all extraneous dependencies and operations are removed.
 
-Benchmarks are run on regular intervals to account for ongoing improvements.
+Benchmarks are run on regular intervals to account for ongoing improvements. Additional, more granular data will be published soon.
 
 <p align=center>
   <picture>
@@ -84,19 +92,77 @@ Peak memory consumption values are less the equivalent peak memory of the contro
 
 ### Download benchmark data
 
-Raw data from the benchmark runs that produced the above graphs can be [downloaded here](https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/latest-results.json)
+Raw data from the benchmark runs that produced the above graphs can be [downloaded here](https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/latest-results.json).
 
 
 ## Methodology
 
-[detailed methodology notes coming soon – [please read our source](src/) the mean time!]
+### General methodology
+
+We endeavor to take a straightforward and scientific approach to publishing AWS SDK performance data:
+
+- **Open** - the code, techniques, reasoning, and findings of our tests should be open and available for anyone to review
+- **Real-world** - our benchmarks should represent real-world usage patterns, avoiding contrived examples
+- **Reproducible** - all results should be generally reproducible by others, whether using this repo's code and techniques or not
+
+
+### Implementation
+
+The benchmarks are run in the following phases and steps:
+
+
+#### Deployment phase
+
+1. Prep - a clean CI environment is instantiated; the latest versions of key dependencies (e.g. `@aws-lite/client`, `@aws-sdk/client-dynamodb`, etc.) are installed; basic linting / tests are run
+2. Hydration - the following SDK dependency scenarios are prepared:
+   1. Raw, installed - a raw, unbundled dependency will be used; for `@aws-lite/*`, that means the dependency will be installed and deployed with the code payload
+   2. Raw, provided - a raw, unbundled dependency provided with the Lambda container will be used (e.g. `@aws-sdk/*` in `nodejs18.x`); this dependency is included with the code payload
+   3. Bundled - a bundled dependency will be used for comparison against the raw version; see [bundling](#bundling)
+3. Deployment - all scenario Lambdas (e.g. `control`, `aws-lite-raw`, etc.) are deployed via [`@architect/architect`](https://arc.codes) via AWS CloudFormation
+
+
+#### Testing phase
+
+1. Prep - a simple, flat 100KB row is written to the benchmark DynamoDB database (if necessary)
+2. Force coldstart - publish an update to each scenario Lambda's environment variables, forcing a coldstart
+3. Lambda invoke - invoke the Lambda, which runs through its prescribed operations
+4. Failures - all runs from all scenario Lambdas are required to complete; if any single invocation errors, does not complete, or coldstart data is not found, the entire benchmark run fails
+5. Writing results - results are written to a DynamoDB database for possible future use / research, as well as to a JSON file to be published to S3
+
+
+#### Publishing phase
+
+1. Parsing - results are aggregated and parsed
+2. Charting - parsed data is passed to the chart generator, which stamps each chart with appropriate metadata (number of runs, date, etc.)
+3. Publishing - charts and raw data are published to a public S3 bucket
+
+
+### Lambda configuration
+
+All scenario Lambdas share the same configuration: `arm64` architecture; 1024 MB memory, all other default settings.
+
+All Lambdas use `nodejs18.x` with the exception of the raw (provided) AWS SDK v2, which is only available provided in the `nodejs16.x` Lambda image.
+
+
+### AWS regions
+
+The intention of this dataset is to provide an apples-to-apples comparison of the time and resource costs associated with JavaScript AWS SDKs. This can be reasonably accomplished within a single AWS region.
+
+While it some degree of regional variability is to be expected, the goal is to test SDK performance, not regional performance. Given how the test suite operates, there is no reason to believe that a given SDK would demonstrate performance differences from region to region – in other words, while one region may have slightly faster Lambda hardware than another, that performance would be expected to impact all tests equally.
+
+As such, at this time we feel that a single region can serve as a solid proxy for overall performance.[^1]
+
+We selected `us-west-2` as, in our experience, it has been a highly reliable and performant region, which seems to get relatively early access to new features.
+
+
+### Bundling
+
+Bundled dependency scenarios are bundled with [`esbuild`](https://esbuild.github.io/) via [simple entry files](src/entry-files). The following settings are used `platform: 'node'`, `format: 'cjs'`; for more detail, see the [deployment plugin](src/plugins/lambdas.mjs).
 
 
 ## Reproduction
 
-We strongly encourage you to reproduce these results yourself!
-
-To do so from your local machine, follow these steps:
+We encourage you to replicate these results. Assuming you have an AWS account and credentials with appropriate permissions (see [Architect's AWS setup guide](https://arc.codes/docs/en/get-started/detailed-aws-setup)), run this same benchmark suite with the following steps:
 
 - Pull down this repo
 - Modify any AWS profile references to `openjsf` to the appropriate AWS profile you'd like to use
