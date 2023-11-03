@@ -20,6 +20,7 @@ This repo benchmarks `aws-lite`, `aws-sdk` (v2), and `@aws-sdk` (v3) as unbundle
   - [AWS regions](#aws-regions)
   - [Bundling](#bundling)
 - [Reproduction](#reproduction)
+- [Acknowledgments](#acknowledgments)
 
 ---
 
@@ -169,3 +170,18 @@ We encourage you to replicate these results. Assuming you have an AWS account an
 - Install dependencies: `npm i`
 - Deploy the project to AWS: `npx arc deploy`
 - Run the benchmark and publish your results: `npm run bench`
+
+
+## Acknowledgments
+
+We'd like to acknowledge and thank the following people + projects in this space:
+
+- [Benchmarking the AWS SDK](https://aaronstuyvenberg.com/posts/aws-sdk-comparison) by AJ Stuyvenberg
+- [`cold-start-benchmarker`](https://github.com/astuyve/cold-start-benchmarker) by AJ Stuyvenberg
+- [`SAR-measure-cold-start`](https://github.com/lumigo-io/SAR-measure-cold-start) by Yan Cui
+- [`datadog-lambda-js`](https://github.com/DataDog/datadog-lambda-js)
+- [Reduce Lambda cold start times](https://aws.amazon.com/blogs/developer/reduce-lambda-cold-start-times-migrate-to-aws-sdk-for-javascript-v3/) by Trivikram Kamat
+
+---
+
+[^1]: AWS's own published [SDK performance benchmarks](https://aws.amazon.com/blogs/developer/reduce-lambda-cold-start-times-migrate-to-aws-sdk-for-javascript-v3/) also use the same single-region approach.
