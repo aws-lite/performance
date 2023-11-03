@@ -8,11 +8,12 @@ const maxMemRe = /(?<=(Max Memory Used: ))[\d.]+(?=( MB))/g
 const coldstartRe = /(?<=(Init Duration: ))[\d.]+(?=( ms))/g
 
 const region = process.env.AWS_PROFILE || 'us-west-2'
-const env = process.env.ARC_ENV === 'production' ? 'Production' : 'Staging'
+const isProd = process.env.ARC_ENV === 'production'
+const env = isProd ? 'Production' : 'Staging'
 const writeResults = true
 const tmp = join(process.cwd(), 'tmp')
 
-const runs = 10 // TODO: increase to a statistically significant quantity of runs
+const runs = isProd ? 10 : 10 // TODO: increase to a statistically significant quantity of runs
 const stats = {}
 
 async function main () {
