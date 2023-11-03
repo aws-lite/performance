@@ -88,7 +88,8 @@ async function main () {
             stats[name].push(run)
           }
           catch (err) {
-            console.log(`Failed to benchmark ${name}`, err)
+            console.log(`Failed to benchmark ${name}`)
+            throw err
           }
         }
         bench().then(res).catch(rej)
