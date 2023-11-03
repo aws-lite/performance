@@ -7,7 +7,7 @@ import awsLite from '@aws-lite/client'
 const maxMemRe = /(?<=(Max Memory Used: ))[\d.]+(?=( MB))/g
 const coldstartRe = /(?<=(Init Duration: ))[\d.]+(?=( ms))/g
 
-const region = 'us-west-2'
+const region = process.env.AWS_PROFILE || 'us-west-2'
 const env = process.env.ARC_ENV === 'production' ? 'Production' : 'Staging'
 const writeResults = true
 
