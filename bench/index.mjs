@@ -7,6 +7,7 @@ import awsLite from '@aws-lite/client'
 const maxMemRe = /(?<=(Max Memory Used: ))[\d.]+(?=( MB))/g
 const coldstartRe = /(?<=(Init Duration: ))[\d.]+(?=( ms))/g
 
+const region = 'us-west-2'
 const env = process.env.ARC_ENV === 'production' ? 'Production' : 'Staging'
 const writeResults = true
 
@@ -14,10 +15,7 @@ const runs = 10 // TODO: increase to a statistically significant quantity of run
 const stats = {}
 
 async function main () {
-  const aws = await awsLite({
-    profile: 'openjsf',
-    region: 'us-west-2',
-  })
+  const aws = await awsLite({ profile: 'openjsf', region })
 
   console.log(`[Init] Let's get ready to benchmark!`)
 
@@ -121,7 +119,7 @@ async function main () {
     writeFileSync(join(process.cwd(), 'tmp', 'latest-results.json'), JSON.stringify(stats, null, 2))
   }
 
-  parseResults(stats)
+  parseResults({ results: stats, region })
 }
 main()
 

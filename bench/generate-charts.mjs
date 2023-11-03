@@ -5,7 +5,7 @@ import awsLite from '@aws-lite/client'
 
 const env = process.env.ARC_ENV === 'production' ? 'Production' : 'Staging'
 
-export default async function generateCharts ({ data, metricToGraph, runs }) {
+export default async function generateCharts ({ data, metricToGraph, region, runs }) {
   console.log('[Charts] Generating charts')
 
   const tmp = join(process.cwd(), 'tmp')
@@ -73,7 +73,7 @@ export default async function generateCharts ({ data, metricToGraph, runs }) {
         font: { size: 14 },
       },
       subtitle: {
-        text: `${metricToGraph}, ${runs}x runs, Lambda 1GB arm64, us-west-2, ${new Date().toISOString()}`,
+        text: `${metricToGraph}, ${runs}x runs, Lambda 1GB arm64, ${region}, ${new Date().toISOString()}`,
         display: true,
         font: { size: 10 },
         padding: { bottom: 10 },
@@ -133,10 +133,7 @@ export default async function generateCharts ({ data, metricToGraph, runs }) {
     console.log(`[Charts] Graphed: '${title}' in ${Date.now() - start}ms`)
   }
 
-  const aws = await awsLite({
-    profile: 'openjsf',
-    region: 'us-west-2',
-  })
+  const aws = await awsLite({ profile: 'openjsf', region })
   const { Parameter } = await aws.SSM.GetParameter({ Name: `/Benchmark${env}/storage-public/benchmark-assets` })
   const Bucket = Parameter.Value
 

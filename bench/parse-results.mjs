@@ -6,7 +6,7 @@ import percentile from 'percentile'
 
 const writeResults = true
 
-async function parseResults (results) {
+async function parseResults ({ results, region = 'us-west-2' }) {
   const start = Date.now()
   const resultsFile = join(process.cwd(), 'tmp', 'latest-results.json')
   const resultsParsedFile = join(process.cwd(), 'tmp', 'latest-results-parsed.json')
@@ -70,7 +70,7 @@ async function parseResults (results) {
 
   console.log(`[Stats] Raw data:`, data)
 
-  generateCharts({ data, metricToGraph, runs })
+  generateCharts({ data, metricToGraph, region, runs })
 }
 
 function parseBenchRuns (acc, results, mapFn, skipControl) {
@@ -104,5 +104,5 @@ function getStandardDeviation (arr) {
 export default parseResults
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  parseResults()
+  parseResults({})
 }
