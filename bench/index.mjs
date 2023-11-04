@@ -57,9 +57,10 @@ async function main () {
         let tries = 0
         console.log(`[Benchmark] Running ${name}...`)
         if (!stats[name]) stats[name] = []
-        async function bench () {
+        async function bench (retrying) {
           try {
             if (tries >= 10) rej(`[Benchmark] Failed to complete ${name} after 10 tries`)
+            if (retrying) await new Promise(res => setTimeout(res, 1000))
             tries++
 
             await updateAndWait({ aws, FunctionName: n(name) })
@@ -83,7 +84,7 @@ async function main () {
               console.log(`[Benchmark] ${name} peak memory not found: ${name}`)
               console.log('Lambda tail:', invoke.LogResult)
               console.log('Retrying...')
-              return bench()
+              return bench(true)
             }
 
             const coldstart = invoke.LogResult.match(coldstartRe)
@@ -94,7 +95,7 @@ async function main () {
               console.log(`[Benchmark] ${name} coldstart not detected, Lambda is warm: ${name}`)
               console.log('Lambda tail:', invoke.LogResult)
               console.log('Retrying...')
-              return bench()
+              return bench(true)
             }
             stats[name].push(run)
             res()
@@ -102,7 +103,7 @@ async function main () {
           catch (err) {
             console.log(`[Benchmark] Error while benchmarking ${name}`, err)
             console.log('Retrying...')
-            bench()
+            bench(true)
           }
         }
         bench()
