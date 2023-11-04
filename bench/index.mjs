@@ -60,8 +60,11 @@ async function main () {
         async function bench (retrying) {
           try {
             if (tries >= 10) rej(`[Benchmark] Failed to complete ${name} after 10 tries`)
-            if (retrying) await new Promise(res => setTimeout(res, 1000))
             tries++
+            if (retrying) {
+              const timeout = (tries * 1000) + Math.floor(Math.random() * 1000)
+              await new Promise(res => setTimeout(res, timeout))
+            }
 
             await updateAndWait({ aws, FunctionName: n(name) })
             const invoke = await aws.Lambda.Invoke({
