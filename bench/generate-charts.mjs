@@ -134,7 +134,7 @@ export default async function generateCharts ({ data, metricToGraph, region, run
   }
 
   const aws = await awsLite({ profile: 'openjsf', region })
-  const { Parameter } = await aws.SSM.GetParameter({ Name: `/Benchmark${env}/storage-public/benchmark-assets` })
+  const { Parameter } = await aws.SSM.GetParameter({ Name: `/Performance${env}/storage-public/assets` })
   const Bucket = Parameter.Value
 
   const files = readdirSync(tmp)

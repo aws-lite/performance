@@ -3,6 +3,8 @@ import { build } from 'esbuild'
 const cwd = process.cwd()
 const entryFileFolder = join(cwd, 'src', 'entry-files')
 
+const n = (stage, name) => `${name}${stage === 'production' ? '' : '-staging'}`
+
 const names = [
   'control',
   'aws-lite-raw',
@@ -18,13 +20,14 @@ const plugin = {
     customLambdas: () => names.map(name => ({ name, src: `src/lambdas/${name}` }))
   },
   deploy: {
-    start: async ({ cloudformation }) => {
+    start: async ({ cloudformation, inventory }) => {
       const resources = Object.entries(cloudformation.Resources)
       for (const [ name, item ] of resources) {
         if (item.Type === 'AWS::Serverless::Function') {
-          cloudformation.Resources[name].Properties.FunctionName = item.ArcMetadata.name
+          const stage = inventory.inv._arc.deployStage
+          cloudformation.Resources[name].Properties.FunctionName = n(stage, item.ArcMetadata.name)
           cloudformation.Resources[name]
-            .Properties.Environment.Variables.BENCHMARK_TABLE_NAME = {
+            .Properties.Environment.Variables.PERFORMANCE_TABLE_NAME = {
               Ref: 'DummyDataTable'
             }
         }

@@ -34,57 +34,57 @@ Benchmarks are run on regular intervals to account for ongoing improvements. Add
 
 <p align=center>
   <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - total time to respond, including coldstart" srcset="https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/total-time-dark.png">
-    <img alt="Benchmark statistics - total time to respond, including coldstart" src="https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/total-time.png">
+    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - total time to respond, including coldstart" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/total-time-dark.png">
+    <img alt="Benchmark statistics - total time to respond, including coldstart" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/total-time.png">
   </picture>
 </p>
 
 <p align=center>
   <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - coldstart latency" srcset="https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/coldstart-dark.png">
-    <img alt="Benchmark statistics - coldstart latench" src="https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/coldstart.png">
+    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - coldstart latency" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/coldstart-dark.png">
+    <img alt="Benchmark statistics - coldstart latench" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/coldstart.png">
   </picture>
 </p>
 
 <p align=center>
   <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - import / require the SDK" srcset="https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/import-dep-dark.png">
-    <img alt="Benchmark statistics - import / require the SDK" src="https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/import-dep.png">
+    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - import / require the SDK" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/import-dep-dark.png">
+    <img alt="Benchmark statistics - import / require the SDK" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/import-dep.png">
   </picture>
 </p>
 
 <p align=center>
   <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - instantiate a client" srcset="https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/instantiate-dark.png">
-    <img alt="Benchmark statistics - instantiate a client" src="https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/instantiate.png">
+    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - instantiate a client" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/instantiate-dark.png">
+    <img alt="Benchmark statistics - instantiate a client" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/instantiate.png">
   </picture>
 </p>
 
 <p align=center>
   <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - DynamoDB - read one 100KB row" srcset="https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/read-dark.png">
-    <img alt="Benchmark statistics - DynamoDB - read one 100KB row" src="https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/read.png">
+    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - DynamoDB - read one 100KB row" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/read-dark.png">
+    <img alt="Benchmark statistics - DynamoDB - read one 100KB row" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/read.png">
   </picture>
 </p>
 
 <p align=center>
   <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - DynamoDB - write one 100KB row" srcset="https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/write-dark.png">
-    <img alt="Benchmark statistics - DynamoDB - write one 100KB row" src="https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/write.png">
+    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - DynamoDB - write one 100KB row" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/write-dark.png">
+    <img alt="Benchmark statistics - DynamoDB - write one 100KB row" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/write.png">
   </picture>
 </p>
 
 <p align=center>
   <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - time to respond, not including coldstart" srcset="https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/execution-time-dark.png">
-    <img alt="Benchmark statistics - time to respond, not including coldstart" src="https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/execution-time.png">
+    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - time to respond, not including coldstart" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/execution-time-dark.png">
+    <img alt="Benchmark statistics - time to respond, not including coldstart" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/execution-time.png">
   </picture>
 </p>
 
 <p align=center>
   <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - peak memory consumption over Lambda baseline" srcset="https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/memory-dark.png">
-    <img alt="Benchmark statistics - peak memory consumption over Lambda baseline" src="https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/memory.png">
+    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - peak memory consumption over Lambda baseline" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/memory-dark.png">
+    <img alt="Benchmark statistics - peak memory consumption over Lambda baseline" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/memory.png">
   </picture>
 </p>
 
@@ -94,8 +94,8 @@ Peak memory consumption values are less the equivalent peak memory of the contro
 ### Download benchmark data
 
 Raw data from the benchmark runs that produced the above graphs can be downloaded here
-- [Raw, unparsed results](https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/latest-results.json).
-- [Parsed results](https://benchmarkstaging-benchmarkassetsbucket-1mtcpz02sjydq.s3.us-west-2.amazonaws.com/latest-results-parsed.json).
+- [Raw, unparsed results](https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/latest-results.json).
+- [Parsed results](https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/latest-results-parsed.json).
 
 
 ## Methodology

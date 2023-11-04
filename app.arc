@@ -1,5 +1,5 @@
 @app
-benchmark
+performance
 
 @aws
 architecture arm64
@@ -14,10 +14,10 @@ lambdas
 architect/plugin-storage-public
 
 @storage-public
-benchmark-assets
+assets
 
 @tables
-benchmark-results
+results
   name *string
   ts **string
 dummy-data

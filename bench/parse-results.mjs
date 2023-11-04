@@ -37,7 +37,7 @@ async function parseResults ({ results, region = 'us-west-2' }) {
   const memory = {}
   parseBenchRuns(memory, results, ({ peakMemory }) => peakMemory)
 
-  console.log(`[Stats] Parsed benchmark statistics in ${Date.now() - start}ms`)
+  console.log(`[Stats] Parsed performance statistics in ${Date.now() - start}ms`)
 
   const parsed = {
     coldstart,

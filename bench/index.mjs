@@ -12,6 +12,7 @@ const isProd = process.env.ARC_ENV === 'production'
 const env = isProd ? 'Production' : 'Staging'
 const writeResults = true
 const tmp = join(process.cwd(), 'tmp')
+const n = name => `${name}${isProd ? '' : '-staging'}`
 
 const runs = isProd ? 10 : 10 // TODO: increase to a statistically significant quantity of runs
 const stats = {}
@@ -19,11 +20,11 @@ const stats = {}
 async function main () {
   const aws = await awsLite({ profile: 'openjsf', region })
 
-  console.log(`[Init] Let's get ready to benchmark!`)
+  console.log(`[Init] Let's get ready to benchmark SDK performance!`)
 
-  const tables = await aws.SSM.GetParametersByPath({ Path: `/Benchmark${env}/tables/` })
+  const tables = await aws.SSM.GetParametersByPath({ Path: `/Performance${env}/tables/` })
   const dummyTable = tables.Parameters.find(({ Name }) => Name.includes('dummy-data')).Value
-  const resultsTable = tables.Parameters.find(({ Name }) => Name.includes('benchmark-results')).Value
+  const resultsTable = tables.Parameters.find(({ Name }) => Name.includes('results')).Value
 
   const ts = new Date().toISOString()
   const start = Date.now()
@@ -57,9 +58,9 @@ async function main () {
         if (!stats[name]) stats[name] = []
         async function bench () {
           try {
-            await updateAndWait({ aws, FunctionName: name })
+            await updateAndWait({ aws, FunctionName: n(name) })
             const invoke = await aws.Lambda.Invoke({
-              FunctionName: name,
+              FunctionName: n(name),
               Payload: {},
               LogType: 'Tail',
             })

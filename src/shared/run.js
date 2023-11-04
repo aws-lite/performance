@@ -62,7 +62,7 @@ async function run (fns, context) {
   return { report, result }
 }
 
-const TableName = process.env.BENCHMARK_TABLE_NAME
+const TableName = process.env.PERFORMANCE_TABLE_NAME
 const Key = { id: 'data' }
 
 module.exports = { run, TableName, Key }
