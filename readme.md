@@ -4,11 +4,11 @@
 >
 > (It's got good error reporting, too.)
 
-This repo benchmarks `aws-lite`, `aws-sdk` (v2), and `@aws-sdk` (v3) as unbundled (and Lambda-provided, if possible), or bundled packages. Control values are provided in a subset of relevant tests.
+This repo benchmarks and analyzes performance metrics from `aws-lite`, `aws-sdk` (v2), and `@aws-sdk` (v3) as unbundled and bundled dependencies. Control values are provided in a subset of relevant tests.
 
 ---
 
-- [Latest benchmark results](#latest-benchmark-results)
+- [Latest performance metrics](#latest-performance-metrics)
   - [Download benchmark data](#download-benchmark-data)
 - [Methodology](#methodology)
   - [General methodology](#general-methodology)
@@ -17,6 +17,7 @@ This repo benchmarks `aws-lite`, `aws-sdk` (v2), and `@aws-sdk` (v3) as unbundle
     - [Testing phase](#testing-phase)
     - [Publishing phase](#publishing-phase)
   - [Lambda configuration](#lambda-configuration)
+  - [AWS SDK v2](#aws-sdk-v2)
   - [AWS regions](#aws-regions)
   - [Bundling](#bundling)
 - [Reproduction](#reproduction)
@@ -24,13 +25,13 @@ This repo benchmarks `aws-lite`, `aws-sdk` (v2), and `@aws-sdk` (v3) as unbundle
 
 ---
 
-## Latest benchmark results
+## Latest performance metrics
 
-The benchmarks below represent timing and memory for a basic roundtrip operation in Lambda: coldstart / initialization > import SDK > instantiate a client > read a row from DynamoDB > write a row to DynamoDB > return metrics.
+The performance metrics below represent timing and memory for a basic roundtrip operation in Lambda: coldstart / initialization > import SDK > instantiate a client > read a row from DynamoDB > write a row to DynamoDB > return metrics.
 
-Each test Lambda has only and exactly what it requires to complete the benchmark; all extraneous dependencies and operations are removed.
+Each test Lambda has only and exactly what it requires to complete the benchmark run; all extraneous dependencies and operations are removed.
 
-Benchmarks are run on regular intervals to account for ongoing improvements. Additional, more granular data will be published soon.
+Performance metrics are gathered on a regular basis to account for ongoing improvements to the SDKs (and, to a lesser extent, Lambda). Additional, more granular data will be published soon.
 
 <p align=center>
   <picture>
@@ -48,10 +49,12 @@ Benchmarks are run on regular intervals to account for ongoing improvements. Add
 
 <p align=center>
   <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - import / require the SDK" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/import-dep-dark.png">
-    <img alt="Benchmark statistics - import / require the SDK" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/import-dep.png">
+    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - import / require" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/import-dep-dark.png">
+    <img alt="Benchmark statistics - import / require" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/import-dep.png">
   </picture>
 </p>
+
+Note: import / require times are tied to individual services; in this benchmark, only the DynamoDB service client is imported for each SDK. **Usage of each additional AWS service would result in additional import / require latency.**
 
 <p align=center>
   <picture>
@@ -88,14 +91,14 @@ Benchmarks are run on regular intervals to account for ongoing improvements. Add
   </picture>
 </p>
 
-Peak memory consumption values are less the equivalent peak memory of the control test (which would include Node.js itself, and all related Lambda bootstrap processes).
+Note: peak memory consumption is shown as values above the Lambda Node.js baseline. Baseline memory consumption would be expected to include Node.js itself, Lambda bootstrap processes, etc. The memory baseline used always corresponds to the equivalent peak memory of the control test (e.g. `aws-lite` peak memory p95 - control peak memory p95).
 
 
 ### Download benchmark data
 
 Raw data from the benchmark runs that produced the above graphs can be downloaded here
-- [Raw, unparsed results](https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/latest-results.json).
-- [Parsed results](https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/latest-results-parsed.json).
+- [Raw, unparsed results](https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/latest-results.json)
+- [Parsed results](https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/latest-results-parsed.json)
 
 
 ## Methodology
@@ -105,13 +108,13 @@ Raw data from the benchmark runs that produced the above graphs can be downloade
 We endeavor to take a straightforward and scientific approach to publishing AWS SDK performance data:
 
 - **Open** - the code, techniques, reasoning, and findings of our tests should be open and available for anyone to review
-- **Real-world** - our benchmarks should represent real-world usage patterns, avoiding contrived examples
+- **Real-world** - our performance benchmarks should represent real-world usage patterns, avoiding contrived or trivial examples
 - **Reproducible** - all results should be generally reproducible by others, whether using this repo's code and techniques or not
 
 
 ### Implementation
 
-The benchmarks are run in the following phases and steps:
+The process for benchmarking and processing performance metrics is run in the following phases and steps:
 
 
 #### Deployment phase
@@ -126,10 +129,10 @@ The benchmarks are run in the following phases and steps:
 
 #### Testing phase
 
-1. Prep - a simple, flat 100KB row is written to the benchmark DynamoDB database (if necessary)
+1. Prep - a simple, flat 100KB row is written to the `results` DynamoDB database (if necessary)
 2. Force coldstart - publish an update to each scenario Lambda's environment variables, forcing a coldstart
 3. Lambda invoke - invoke the Lambda, which runs through its prescribed operations
-4. Failures - all runs from all scenario Lambdas are required to complete; if any single invocation errors, does not complete, or coldstart data is not found, the entire benchmark run fails
+4. Failures - all runs from all scenario Lambdas are required to complete; if any single invocation fatally errors, does not complete, or coldstart data cannot be found, the entire process fails
 5. Writing results - results are written to a DynamoDB database for possible future use / research, as well as to a JSON file to be published to S3
 
 
@@ -180,13 +183,13 @@ Bundled dependency scenarios are bundled with [`esbuild`](https://esbuild.github
 
 ## Reproduction
 
-We encourage you to replicate these results. Assuming you have an AWS account and credentials with appropriate permissions (see [Architect's AWS setup guide](https://arc.codes/docs/en/get-started/detailed-aws-setup)), run this same benchmark suite with the following steps:
+We encourage you to replicate these results. Assuming you have an AWS account and credentials with appropriate permissions (see [Architect's AWS setup guide](https://arc.codes/docs/en/get-started/detailed-aws-setup)), run this same performance metric suite with the following steps:
 
 - Pull down this repo
 - Modify any AWS profile references to `openjsf` to the appropriate AWS profile you'd like to use
 - Install dependencies: `npm i`
 - Deploy the project to AWS: `npx arc deploy`
-- Run the benchmark and publish your results: `npm run bench`
+- Run the benchmarks and view the results: `npm run bench`
 
 
 ## Acknowledgments
@@ -201,4 +204,4 @@ We'd like to acknowledge and thank the following people + projects in this space
 
 ---
 
-[^1]: AWS's own published [SDK performance benchmarks](https://aws.amazon.com/blogs/developer/reduce-lambda-cold-start-times-migrate-to-aws-sdk-for-javascript-v3/) also use the same single-region approach.
+[^1]: AWS's own published [SDK performance benchmarks](https://aws.amazon.com/blogs/developer/reduce-lambda-cold-start-times-migrate-to-aws-sdk-for-javascript-v3/) also use the same single-region approach

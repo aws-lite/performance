@@ -28,7 +28,7 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       filename: 'coldstart',
     },
     importDep: {
-      title: 'Import / require the SDK (ms)',
+      title: 'Import / require (ms)',
       filename: 'import-dep',
       noControlTest: true,
     },
