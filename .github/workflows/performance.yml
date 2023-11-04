@@ -2,7 +2,7 @@ name: Performance tests
 
 on:
   schedule:
-    - cron:  '*/10 * * * *' # TODO: cut over to: '30 0 * * mon,wed,fri'
+    - cron:  '30 0 * * mon,wed,fri'
 
 defaults:
   run:
