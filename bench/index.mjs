@@ -14,7 +14,7 @@ const writeResults = true
 const tmp = join(process.cwd(), 'tmp')
 const n = name => `${name}${isProd ? '' : '-staging'}`
 
-const runs = isProd ? 10 : 10 // TODO: increase to a statistically significant quantity of runs
+const runs = isProd ? 100 : 10
 const stats = {}
 
 async function main () {
