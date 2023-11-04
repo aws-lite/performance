@@ -54,10 +54,14 @@ async function main () {
 
     const operations = lambdae.map(name => {
       return new Promise((res, rej) => {
+        let tries = 0
         console.log(`[Benchmark] Running ${name}...`)
         if (!stats[name]) stats[name] = []
         async function bench () {
           try {
+            if (tries >= 10) rej(`[Benchmark] Failed to complete ${name} after 10 tries`)
+            tries++
+
             await updateAndWait({ aws, FunctionName: n(name) })
             const invoke = await aws.Lambda.Invoke({
               FunctionName: n(name),
@@ -76,25 +80,32 @@ async function main () {
               run.peakMemory = Number(maxMem[0])
             }
             else {
+              console.log(`[Benchmark] ${name} peak memory not found: ${name}`)
               console.log('Lambda tail:', invoke.LogResult)
-              throw Error(`Peak memory not found: ${name}`)
+              console.log('Retrying...')
+              return bench()
             }
+
             const coldstart = invoke.LogResult.match(coldstartRe)
             if (coldstart) {
               run.coldstart = Number(coldstart[0])
             }
             else {
+              console.log(`[Benchmark] ${name} coldstart not detected, Lambda is warm: ${name}`)
               console.log('Lambda tail:', invoke.LogResult)
-              throw Error(`Coldstart not detected, Lambda is warm: ${name}`)
+              console.log('Retrying...')
+              return bench()
             }
             stats[name].push(run)
+            res()
           }
           catch (err) {
-            console.log(`Failed to benchmark ${name}`)
-            throw err
+            console.log(`[Benchmark] Error while benchmarking ${name}`, err)
+            console.log('Retrying...')
+            bench()
           }
         }
-        bench().then(res).catch(rej)
+        bench()
       })
     })
 
