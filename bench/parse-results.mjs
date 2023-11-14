@@ -1,4 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
 import { names } from '../src/plugins/lambdas.mjs'
 import generateCharts from './generate-charts.mjs'
 import { join } from 'node:path'
@@ -8,8 +9,9 @@ const writeResults = true
 
 async function parseResults ({ results, region = 'us-west-2' }) {
   const start = Date.now()
-  const resultsFile = join(process.cwd(), 'tmp', 'latest-results.json')
-  const resultsParsedFile = join(process.cwd(), 'tmp', 'latest-results-parsed.json')
+  const tmp = join(process.cwd(), 'tmp')
+  const resultsFile = join(tmp, 'latest-results.json')
+  const resultsParsedFile = join(tmp, 'latest-results-parsed.json')
   results = results || (existsSync(resultsFile) && JSON.parse(readFileSync(resultsFile)))
 
   // Stats
@@ -52,6 +54,14 @@ async function parseResults ({ results, region = 'us-west-2' }) {
 
   if (writeResults) {
     writeFileSync(resultsParsedFile, JSON.stringify(parsed, null, 2))
+
+    const hash = path => createHash('sha256').update(readFileSync(path)).digest('hex')
+    const checksum = {
+      updated: new Date(start).toISOString(),
+      results: hash(resultsFile),
+      resultsParsed: hash(resultsParsedFile),
+    }
+    writeFileSync(join(tmp, 'checksum.json'), JSON.stringify(checksum, null, 2))
   }
 
   const runs = results.control.length
