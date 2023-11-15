@@ -4,9 +4,6 @@ import { names as lambdae } from '../src/plugins/lambdas.mjs'
 import parseResults from './parse-results.mjs'
 import awsLite from '@aws-lite/client'
 
-const maxMemRe = /(?<=(Max Memory Used: ))[\d.]+(?=( MB))/g
-const coldstartRe = /(?<=(Init Duration: ))[\d.]+(?=( ms))/g
-
 const region = process.env.AWS_PROFILE || 'us-west-2'
 const isProd = process.env.ARC_ENV === 'production'
 const env = isProd ? 'Production' : 'Staging'
@@ -14,7 +11,7 @@ const writeResults = true
 const tmp = join(process.cwd(), 'tmp')
 const n = name => `${name}${isProd ? '' : '-staging'}`
 
-const runs = isProd ? 100 : 10
+const runs = isProd ? 100 : 5
 const stats = {}
 
 async function main () {
@@ -68,33 +65,24 @@ async function main () {
 
             await updateAndWait({ aws, FunctionName: n(name) })
             const invoke = await aws.Lambda.Invoke({
-              FunctionName: n(name),
-              Payload: {},
+              FunctionName: n('invoker'),
+              Payload: { FunctionName: n(name), name },
               LogType: 'Tail',
             })
+
             if (invoke.Payload.errorType || invoke.FunctionError) {
               console.log(invoke)
               throw Error('Invoke failed:', name)
             }
-            const run = invoke.Payload.report
-            run.end = Date.now()
+            const run = invoke.Payload
 
-            const maxMem = invoke.LogResult.match(maxMemRe)
-            if (maxMem) {
-              run.peakMemory = Number(maxMem[0])
-            }
-            else {
+            if (!run.peakMemory) {
               console.log(`[Benchmark] ${name} peak memory not found: ${name}`)
               console.log('Lambda tail:', invoke.LogResult)
               console.log('Retrying...')
               return bench(true)
             }
-
-            const coldstart = invoke.LogResult.match(coldstartRe)
-            if (coldstart) {
-              run.coldstart = Number(coldstart[0])
-            }
-            else {
+            if (!run.init) {
               console.log(`[Benchmark] ${name} coldstart not detected, Lambda is warm: ${name}`)
               console.log('Lambda tail:', invoke.LogResult)
               console.log('Retrying...')

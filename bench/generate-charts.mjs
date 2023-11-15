@@ -27,6 +27,10 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       title: `Coldstart latency (ms)`,
       filename: 'coldstart',
     },
+    init: {
+      title: `Initialization latency (ms)`,
+      filename: 'init',
+    },
     importDep: {
       title: 'Import / require (ms)',
       filename: 'import-dep',
@@ -55,10 +59,12 @@ export default async function generateCharts ({ data, metricToGraph, region, run
     executionTime: {
       title: 'Time to respond, not including coldstart (ms)',
       filename: 'execution-time',
+      excludeControl: true,
     },
     totalTime: {
       title: 'Total time to respond, including coldstart (ms)',
       filename: 'total-time',
+      excludeControl: true,
     },
   }
 

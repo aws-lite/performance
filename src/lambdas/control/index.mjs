@@ -1,8 +1,10 @@
 export async function handler (event, context) {
+  const now = Date.now()
   return {
     report: {
       id: context.awsRequestId,
-      start: Date.now(),
+      start: now,
+      end: now,
     }
   }
 }

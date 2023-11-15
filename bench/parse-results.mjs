@@ -14,15 +14,19 @@ async function parseResults ({ results, region = 'us-west-2' }) {
   const resultsParsedFile = join(tmp, 'latest-results-parsed.json')
   results = results || (existsSync(resultsFile) && JSON.parse(readFileSync(resultsFile)))
 
-  // Stats
+  // Stats!
+  // Prefer `end` over `invokeEnd`: we don't need to factor response time to the Lambda API
+  // In smaller scale testing the delta is consistently about ~10ms for our report payload
+
   const coldstart = {}
-  parseBenchRuns(coldstart, results, ({ coldstart }) => coldstart)
+  parseBenchRuns(coldstart, results, ({ invokeStart, init, start, end }) => {
+    const duration = end - invokeStart
+    const execution = end - start
+    return duration - init - execution
+  })
 
-  const totalTime = {}
-  parseBenchRuns(totalTime, results, ({ coldstart, start, end }) => coldstart + (end - start))
-
-  const executionTime = {}
-  parseBenchRuns(executionTime, results, ({ start, end }) => end - start)
+  const init = {}
+  parseBenchRuns(init, results, ({ init }) => init)
 
   const importDep = {}
   parseBenchRuns(importDep, results, ({ importDep }) => importDep.time, true)
@@ -39,17 +43,24 @@ async function parseResults ({ results, region = 'us-west-2' }) {
   const memory = {}
   parseBenchRuns(memory, results, ({ peakMemory }) => peakMemory)
 
+  const executionTime = {}
+  parseBenchRuns(executionTime, results, ({ start, end }) => end - start)
+
+  const totalTime = {}
+  parseBenchRuns(totalTime, results, ({ invokeStart, end }) => end - invokeStart)
+
   console.log(`[Stats] Parsed performance statistics in ${Date.now() - start}ms`)
 
   const parsed = {
     coldstart,
-    executionTime,
-    totalTime,
+    init,
     importDep,
     instantiate,
     read,
     write,
     memory,
+    executionTime,
+    totalTime,
   }
 
   if (writeResults) {

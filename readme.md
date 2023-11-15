@@ -43,7 +43,7 @@ Performance metrics are gathered on a regular basis to account for ongoing impro
 <p align=center>
   <picture>
     <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - coldstart latency" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/coldstart-dark.png">
-    <img alt="Benchmark statistics - coldstart latench" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/coldstart.png">
+    <img alt="Benchmark statistics - coldstart latency" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/coldstart.png">
   </picture>
 </p>
 
@@ -54,7 +54,7 @@ Performance metrics are gathered on a regular basis to account for ongoing impro
   </picture>
 </p>
 
-Note: import / require times are tied to individual services; in this benchmark, only the DynamoDB service client is imported for each SDK. **Usage of each additional AWS service would result in additional import / require latency.**
+Note: import / require times are tied to individual services; in this benchmark, only the DynamoDB service client is imported. **Usage of additional AWS services in your own business logic would necessitate additional imports, thereby compounding response latency.**
 
 <p align=center>
   <picture>

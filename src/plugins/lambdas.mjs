@@ -14,10 +14,11 @@ const names = [
   'aws-sdk-v3-raw',
   'aws-sdk-v3-bundled',
 ]
+const lambdae = names.concat('invoker')
 
 const plugin = {
   set: {
-    customLambdas: () => names.map(name => ({ name, src: `src/lambdas/${name}` }))
+    customLambdas: () => lambdae.map(name => ({ name, src: `src/lambdas/${name}` }))
   },
   deploy: {
     start: async ({ cloudformation, inventory }) => {
