@@ -122,7 +122,7 @@ The process for benchmarking and processing performance metrics is run in the fo
 1. Prep - a clean CI environment is instantiated; the latest versions of key dependencies (e.g. `@aws-lite/client`, `@aws-sdk/client-dynamodb`, etc.) are installed; basic linting / tests are run
 2. Hydration - the following SDK dependency scenarios are prepared:
    1. Raw, installed - a raw, unbundled dependency will be used; for `@aws-lite/*`, that means the dependency will be installed and deployed with the code payload
-   2. Raw, provided - a raw, unbundled dependency provided with the Lambda container will be used (e.g. `@aws-sdk/*` in `nodejs18.x`); this dependency is included with the code payload
+   2. Raw, provided - a raw, unbundled dependency provided with the Lambda container will be used (e.g. `@aws-sdk/*` in `nodejs20.x`); this dependency is included with the code payload
    3. Bundled - a bundled dependency will be used for comparison against the raw version; see [bundling](#bundling)
 3. Deployment - all scenario Lambdas (e.g. `control`, `aws-lite-raw`, etc.) are deployed via [`@architect/architect`](https://arc.codes) via AWS CloudFormation
 
@@ -147,7 +147,7 @@ The process for benchmarking and processing performance metrics is run in the fo
 
 All scenario Lambdas share the same configuration: `arm64` architecture; 1024 MB memory, all other default settings.
 
-All Lambdas use `nodejs18.x` with the exception of the raw (provided) AWS SDK v2, which is only available provided in the `nodejs16.x` Lambda image.
+All Lambdas use `nodejs20.x` with the exception of the raw (provided) AWS SDK v2, which is only available provided in the `nodejs16.x` Lambda image.
 
 
 ### AWS SDK v2

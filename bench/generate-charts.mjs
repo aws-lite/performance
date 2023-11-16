@@ -12,13 +12,13 @@ export default async function generateCharts ({ data, metricToGraph, region, run
   if (!existsSync(tmp)) mkdirSync(tmp)
 
   const labels = [
-    'control (18.x)',
-    'aws-lite (raw, 18.x)',
-    'aws-lite (bundled, 18.x)',
+    'control (20.x)',
+    'aws-lite (raw, 20.x)',
+    'aws-lite (bundled, 20.x)',
     'aws-sdk (v2, raw, 16.x)',
-    'aws-sdk (v2, bundled, 18.x)',
-    '@aws-sdk (v3 raw, 18.x)',
-    '@aws-sdk (v3 bundled, 18.x)',
+    'aws-sdk (v2, bundled, 20.x)',
+    '@aws-sdk (v3 raw, 20.x)',
+    '@aws-sdk (v3 bundled, 20.x)',
   ]
   const backgroundColor = [ '#E0E0E0', '#2D9CDB', '#2F80ED', '#F2C94C', '#F2994A', '#BB6BD9', '#9B51E0' ]
 
