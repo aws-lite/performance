@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readdirSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import ChartJsImage from 'chartjs-to-image'
 import awsLite from '@aws-lite/client'
@@ -142,11 +142,13 @@ export default async function generateCharts ({ data, metricToGraph, region, run
   const aws = await awsLite({ profile: 'openjsf', region })
   const { Parameter } = await aws.SSM.GetParameter({ Name: `/Performance${env}/storage-public/assets` })
   const Bucket = Parameter.Value
+  const CacheControl = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
 
   const files = readdirSync(tmp)
+  writeFileSync(join(tmp, 'assets.json'), JSON.stringify(files, null, 2))
+  files.push('assets.json')
   for (const Key of files) {
     // TODO set caching for a little while once things settle
-    const CacheControl = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
     await aws.S3.PutObject({
       Bucket,
       Key,
