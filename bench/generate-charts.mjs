@@ -95,6 +95,7 @@ export default async function generateCharts ({ data, metricToGraph, region, run
     chart
       .setChartJsVersion('4')
       .setWidth(800)
+      .setHeight(400)
       .setDevicePixelRatio(2.0)
 
     // noControlTest - do not expect values for control, as they weren't included
