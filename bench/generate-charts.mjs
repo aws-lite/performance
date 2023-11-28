@@ -20,7 +20,8 @@ export default async function generateCharts ({ data, metricToGraph, region, run
     '@aws-sdk (v3 raw, 20.x)',
     '@aws-sdk (v3 bundled, 20.x)',
   ]
-  const backgroundColor = [ '#E0E0E0', '#2D9CDB', '#2F80ED', '#F2C94C', '#F2994A', '#BB6BD9', '#9B51E0' ]
+  const backgroundColor = [ '#E0E0E0', '#27AE60', '#219653', '#F2AF4A', '#F2AF4A', '#F2994A', '#F2994A' ]
+  const backgrounds = num => backgroundColor.map(i => `${i}${num}`)
 
   const charts = {
     coldstart: {
@@ -108,7 +109,9 @@ export default async function generateCharts ({ data, metricToGraph, region, run
         labels: removeControl(labels),
         datasets: [ {
           data: excludeControl ? data[name].slice(1) : data[name],
-          backgroundColor: removeControl(backgroundColor),
+          backgroundColor: removeControl(backgrounds('95')),
+          borderWidth: 2,
+          borderColor: removeControl(backgrounds('')),
         } ],
       },
       options: getOptions(),
