@@ -4,7 +4,7 @@ import { names as lambdae } from '../src/plugins/lambdas.mjs'
 import parseResults from './parse-results.mjs'
 import awsLite from '@aws-lite/client'
 
-const region = process.env.AWS_PROFILE || 'us-west-2'
+const region = process.env.AWS_REGION || 'us-west-2'
 const isProd = process.env.ARC_ENV === 'production'
 const env = isProd ? 'Production' : 'Staging'
 const writeResults = true
