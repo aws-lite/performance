@@ -143,6 +143,8 @@ export default async function generateCharts ({ data, metricToGraph, region, run
     console.log(`[Charts] Graphed: '${title}' in ${Date.now() - start}ms`)
   }
 
+  if (process.env.DISABLE_PUBLISH) return
+
   const aws = await awsLite({ profile: 'openjsf', region })
   const { Parameter } = await aws.SSM.GetParameter({ Name: `/Performance${env}/storage-public/assets` })
   const Bucket = Parameter.Value

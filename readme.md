@@ -190,6 +190,7 @@ We encourage you to replicate these results. Assuming you have an AWS account an
 - Install dependencies: `npm i`
 - Deploy the project to AWS: `npx arc deploy`
 - Run the benchmarks and view the results: `npm run bench`
+  - To disable publishing results to a public S3 bucket, set a `DISABLE_PUBLISH` env var
 
 
 ## Acknowledgments
