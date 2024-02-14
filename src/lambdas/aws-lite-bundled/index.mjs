@@ -8,7 +8,7 @@ export async function handler (event, context) {
     },
 
     instantiate: async (awsLite) => {
-      return await awsLite({ plugins: [ './aws-lite-dynamodb-bundle.js' ] })
+      return await awsLite({ plugins: [ import('./aws-lite-dynamodb-bundle.js') ] })
     },
 
     read: async (aws) => {

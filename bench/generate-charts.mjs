@@ -145,7 +145,11 @@ export default async function generateCharts ({ data, metricToGraph, region, run
 
   if (process.env.DISABLE_PUBLISH) return
 
-  const aws = await awsLite({ profile: 'openjsf', region })
+  const aws = await awsLite({
+    profile: 'openjsf',
+    region,
+    plugins: [ import('@aws-lite/ssm'), import('@aws-lite/s3') ]
+  })
   const { Parameter } = await aws.SSM.GetParameter({ Name: `/Performance${env}/storage-public/assets` })
   const Bucket = Parameter.Value
   const CacheControl = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'

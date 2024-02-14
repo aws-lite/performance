@@ -11,7 +11,7 @@ export async function handler (event, context) {
     },
 
     instantiate: async (awsLite) => {
-      return await awsLite()
+      return await awsLite({ plugins: [ import('@aws-lite/dynamodb') ] })
     },
 
     read: async (aws) => {

@@ -1,11 +1,10 @@
 import awsLite from '@aws-lite/client'
-import '@aws-lite/lambda'
 
 const maxMemRe = /(?<=(Max Memory Used: ))[\d.]+(?=( MB))/g
 const initDurationRe = /(?<=(Init Duration: ))[\d.]+(?=( ms))/g
 
 export async function handler ({ FunctionName, name }) {
-  const aws = await awsLite({})
+  const aws = await awsLite({ plugins: [ import('@aws-lite/lambda') ] })
   const invokeStart = Date.now()
   const invoke = await aws.Lambda.Invoke({
     FunctionName,

@@ -15,7 +15,11 @@ const runs = isProd ? 100 : 5
 const stats = {}
 
 async function main () {
-  const aws = await awsLite({ profile: 'openjsf', region })
+  const aws = await awsLite({
+    profile: 'openjsf',
+    region,
+    plugins: [ import('@aws-lite/dynamodb'), import('@aws-lite/lambda'), import('@aws-lite/ssm') ],
+  })
 
   console.log(`[Init] Let's get ready to benchmark SDK performance!`)
 
