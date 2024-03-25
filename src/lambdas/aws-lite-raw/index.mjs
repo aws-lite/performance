@@ -1,17 +1,15 @@
 import { run, TableName, Key } from '@architect/shared/run.js'
+let dynamodb
 
 export async function handler (event, context) {
-  // Just for Lambda treeshaking
-  // eslint-disable-next-line
-  if (false) await import('@aws-lite/dynamodb')
-
   return await run({
     importDep: async () => {
+      dynamodb = await import('@aws-lite/dynamodb')
       return (await import('@aws-lite/client')).default
     },
 
     instantiate: async (awsLite) => {
-      return await awsLite({ plugins: [ import('@aws-lite/dynamodb') ] })
+      return await awsLite({ plugins: [ dynamodb ] })
     },
 
     read: async (aws) => {
