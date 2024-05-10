@@ -19,8 +19,8 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@architect/architect": "^11.0.5",
-    "@architect/eslint-config": "^2.1.2",
+    "@architect/architect": "^11.0.12",
+    "@architect/eslint-config": "^3.0.0",
     "@architect/plugin-storage-public": "^1.0.2",
     "@aws-lite/client": "latest",
     "@aws-lite/dynamodb": "latest",
@@ -30,16 +30,10 @@
     "@aws-sdk/client-dynamodb": "latest",
     "@aws-sdk/lib-dynamodb": "latest",
     "aws-sdk": "latest",
-    "chart.js": "^4.4.1",
+    "chart.js": "^4.4.2",
     "chartjs-to-image": "^1.2.2",
-    "esbuild": "^0.20.0",
-    "eslint": "^8.56.0",
+    "esbuild": "^0.21.1",
+    "eslint": "^9.2.0",
     "percentile": "^1.6.0"
-  },
-  "eslintConfig": {
-    "extends": "@architect/eslint-config",
-    "rules": {
-      "global-require": "off"
-    }
   }
 }
