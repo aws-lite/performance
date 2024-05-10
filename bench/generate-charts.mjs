@@ -85,7 +85,7 @@ export default async function generateCharts ({ data, metricToGraph, region, run
         font: { size: 10 },
         padding: { bottom: 10 },
       },
-    }
+    },
   }
   const getOptions = () => JSON.parse(JSON.stringify(options))
 
@@ -135,7 +135,7 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       x: {
         grid: { color: grid },
         ticks: { color: light },
-      }
+      },
     }
     chart.setConfig(config)
     await chart.toFile(join(tmp, filename + '-dark.png'))
@@ -148,7 +148,7 @@ export default async function generateCharts ({ data, metricToGraph, region, run
   const aws = await awsLite({
     profile: 'openjsf',
     region,
-    plugins: [ import('@aws-lite/ssm'), import('@aws-lite/s3') ]
+    plugins: [ import('@aws-lite/ssm'), import('@aws-lite/s3') ],
   })
   const { Parameter } = await aws.SSM.GetParameter({ Name: `/Performance${env}/storage-public/assets` })
   const Bucket = Parameter.Value

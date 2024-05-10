@@ -18,7 +18,7 @@ const lambdae = names.concat('invoker')
 
 const plugin = {
   set: {
-    customLambdas: () => lambdae.map(name => ({ name, src: `src/lambdas/${name}` }))
+    customLambdas: () => lambdae.map(name => ({ name, src: `src/lambdas/${name}` })),
   },
   deploy: {
     start: async ({ cloudformation, inventory }) => {
@@ -29,11 +29,11 @@ const plugin = {
           cloudformation.Resources[name].Properties.FunctionName = n(stage, item.ArcMetadata.name)
           cloudformation.Resources[name]
             .Properties.Environment.Variables.PERFORMANCE_TABLE_NAME = {
-              Ref: 'DummyDataTable'
+              Ref: 'DummyDataTable',
             }
         }
       }
-    }
+    },
   },
   hydrate: {
     copy: async ({ inventory }) => {
@@ -60,8 +60,8 @@ const plugin = {
           }
         }
       }
-    }
-  }
+    },
+  },
 }
 
 async function esbuild (entryPoints, outfile) {

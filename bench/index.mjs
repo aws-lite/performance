@@ -33,7 +33,7 @@ async function main () {
   // Check to see if database was seeded with dummy data
   const dummyData = await aws.DynamoDB.GetItem({
     TableName: dummyTable,
-    Key: { id: 'data' }
+    Key: { id: 'data' },
   })
   if (!dummyData.Item) {
     const hundredKB = 1024 * 100
@@ -41,8 +41,8 @@ async function main () {
       TableName: dummyTable,
       Item: {
         id: 'data',
-        data: Buffer.alloc(hundredKB).toString('base64')
-      }
+        data: Buffer.alloc(hundredKB).toString('base64'),
+      },
     })
     console.log('[Init] Wrote 100KB dummy data row')
   }
@@ -120,7 +120,7 @@ async function main () {
   // TODO maybe just quickly print some averages or p90 results or something
 
   const PutRequestItems = lambdae.map(name => ({
-    PutRequest: { Item: { name, ts, stats: stats[name] } }
+    PutRequest: { Item: { name, ts, stats: stats[name] } },
   }))
   const batch = { RequestItems: { [resultsTable]: PutRequestItems } }
   await aws.DynamoDB.BatchWriteItem(batch)

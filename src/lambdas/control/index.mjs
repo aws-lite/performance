@@ -5,6 +5,6 @@ export async function handler (event, context) {
       id: context.awsRequestId,
       start: now,
       end: now,
-    }
+    },
   }
 }
