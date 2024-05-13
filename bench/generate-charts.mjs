@@ -32,22 +32,22 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       title: `Initialization latency (ms)`,
       filename: 'init',
     },
-    importDep: {
-      title: 'Import / require (ms)',
-      filename: 'import-dep',
+    importDynamoDB: {
+      title: 'Import / require DynamoDB (ms)',
+      filename: 'import-dynamodb',
       noControlTest: true,
     },
-    instantiate: {
-      title: 'Instantiate a client (ms)',
-      filename: 'instantiate',
+    instantiateDynamoDB: {
+      title: 'Instantiate a DynamoDB client (ms)',
+      filename: 'instantiate-dynamodb',
       noControlTest: true,
     },
-    read: {
+    readDynamoDB: {
       title: 'DynamoDB - read one 100KB row (ms)',
       filename: 'read',
       noControlTest: true,
     },
-    write: {
+    writeDynamoDB: {
       title: 'DynamoDB - write one 100KB row (ms)',
       filename: 'write',
       noControlTest: true,
@@ -57,14 +57,19 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       filename: 'memory',
       excludeControl: true,
     },
-    executionTime: {
-      title: 'Time to respond, not including coldstart (ms)',
-      filename: 'execution-time',
+    executionTimeDynamoDB: {
+      title: 'Time to execute (DynamoDB client only), not including coldstart (ms)',
+      filename: 'execution-time-dynamodb',
       excludeControl: true,
     },
-    totalTime: {
-      title: 'Total time to respond, including coldstart (ms)',
-      filename: 'total-time',
+    executionTimeAll: {
+      title: 'Time to execute (all benchmarked clients), not including coldstart (ms)',
+      filename: 'execution-time-all',
+      excludeControl: true,
+    },
+    totalTimeAll: {
+      title: 'Total time to respond (all benchmarked clients), including coldstart (ms)',
+      filename: 'total-time-all',
       excludeControl: true,
     },
   }

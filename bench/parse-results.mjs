@@ -28,39 +28,43 @@ async function parseResults ({ results, region = 'us-west-2' }) {
   const init = {}
   parseBenchRuns(init, results, ({ init }) => init)
 
-  const importDep = {}
-  parseBenchRuns(importDep, results, ({ importDep }) => importDep.time, true)
+  const importDynamoDB = {}
+  parseBenchRuns(importDynamoDB, results, ({ importDynamoDB }) => importDynamoDB.time, true)
 
-  const instantiate = {}
-  parseBenchRuns(instantiate, results, ({ instantiate }) => instantiate.time, true)
+  const instantiateDynamoDB = {}
+  parseBenchRuns(instantiateDynamoDB, results, ({ instantiateDynamoDB }) => instantiateDynamoDB.time, true)
 
-  const read = {}
-  parseBenchRuns(read, results, ({ read }) => read.time, true)
+  const readDynamoDB = {}
+  parseBenchRuns(readDynamoDB, results, ({ readDynamoDB }) => readDynamoDB.time, true)
 
-  const write = {}
-  parseBenchRuns(write, results, ({ write }) => write.time, true)
+  const writeDynamoDB = {}
+  parseBenchRuns(writeDynamoDB, results, ({ writeDynamoDB }) => writeDynamoDB.time, true)
 
   const memory = {}
   parseBenchRuns(memory, results, ({ peakMemory }) => peakMemory)
 
-  const executionTime = {}
-  parseBenchRuns(executionTime, results, ({ start, end }) => end - start)
+  const executionTimeDynamoDB = {}
+  parseBenchRuns(executionTimeDynamoDB, results, ({ importDynamoDB, writeDynamoDB }) => writeDynamoDB.timeEnd - importDynamoDB.timeStart, true)
 
-  const totalTime = {}
-  parseBenchRuns(totalTime, results, ({ invokeStart, end }) => end - invokeStart)
+  const executionTimeAll = {}
+  parseBenchRuns(executionTimeAll, results, ({ start, end }) => end - start)
+
+  const totalTimeAll = {}
+  parseBenchRuns(totalTimeAll, results, ({ invokeStart, end }) => end - invokeStart)
 
   console.log(`[Stats] Parsed performance statistics in ${Date.now() - start}ms`)
 
   const parsed = {
     coldstart,
     init,
-    importDep,
-    instantiate,
-    read,
-    write,
+    importDynamoDB,
+    instantiateDynamoDB,
+    readDynamoDB,
+    writeDynamoDB,
     memory,
-    executionTime,
-    totalTime,
+    executionTimeDynamoDB,
+    executionTimeAll,
+    totalTimeAll,
   }
 
   if (writeResults) {

@@ -4,31 +4,31 @@ export async function handler (event, context) {
   const commands = {}
 
   return await run({
-    importDep: async () => {
+    importDynamoDB: async () => {
       const {
         DynamoDBClient,
         DynamoDBDocumentClient,
         GetCommand,
         PutCommand,
-      } = await import('./aws-sdk-v3-bundle.js')
+      } = await import('./aws-sdk-v3-dynamodb-bundle.js')
       commands.GetCommand = GetCommand
       commands.PutCommand = PutCommand
       return { DynamoDBClient, DynamoDBDocumentClient }
     },
 
-    instantiate: async (clients) => {
+    instantiateDynamoDB: async (clients) => {
       const { DynamoDBClient, DynamoDBDocumentClient } = clients
       const client = new DynamoDBClient({})
       const docClient = DynamoDBDocumentClient.from(client)
       return docClient
     },
 
-    read: async (docClient) => {
+    readDynamoDB: async (docClient) => {
       const command = new commands.GetCommand({ TableName, Key })
       return await docClient.send(command)
     },
 
-    write: async (docClient, Item) => {
+    writeDynamoDB: async (docClient, Item) => {
       const command = new commands.PutCommand({ TableName, Item })
       return await docClient.send(command)
     },

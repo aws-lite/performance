@@ -1,28 +1,30 @@
 async function run (fns, context) {
-  let { importDep, instantiate, read, write } = fns
+  let {
+    importDynamoDB, instantiateDynamoDB, readDynamoDB, writeDynamoDB,
+  } = fns
 
   let report = {
     id: context.awsRequestId,
     start: Date.now(),
-    importDep: {
+    importDynamoDB: {
       memoryStart: null,
       memoryEnd: null,
       timeStart: null,
       timeEnd: null,
     },
-    instantiate: {
+    instantiateDynamoDB: {
       memoryStart: null,
       memoryEnd: null,
       timeStart: null,
       timeEnd: null,
     },
-    read: {
+    readDynamoDB: {
       memoryStart: null,
       memoryEnd: null,
       timeStart: null,
       timeEnd: null,
     },
-    write: {
+    writeDynamoDB: {
       memoryStart: null,
       memoryEnd: null,
       timeStart: null,
@@ -41,25 +43,27 @@ async function run (fns, context) {
     report[step].memory = report[step].memoryEnd - report[step].memoryStart
   }
 
-  recordStart('importDep')
-  const sdk = await importDep()
-  recordEnd('importDep')
+  recordStart('importDynamoDB')
+  const dynamoDBsdk = await importDynamoDB()
+  recordEnd('importDynamoDB')
 
-  recordStart('instantiate')
-  const client = await instantiate(sdk)
-  recordEnd('instantiate')
+  recordStart('instantiateDynamoDB')
+  const dynamoDBClient = await instantiateDynamoDB(dynamoDBsdk)
+  recordEnd('instantiateDynamoDB')
 
-  recordStart('read')
-  const payload = await read(client)
-  recordEnd('read')
+  recordStart('readDynamoDB')
+  const dynamoDBpayload = await readDynamoDB(dynamoDBClient)
+  recordEnd('readDynamoDB')
 
-  recordStart('write')
-  const result = await write(client, payload.Item)
-  recordEnd('write')
+  recordStart('writeDynamoDB')
+  const dynamoDBResult = await writeDynamoDB(dynamoDBClient, dynamoDBpayload.Item)
+  recordEnd('writeDynamoDB')
+
+  // TODO add more clients + operations
 
   report.end = Date.now()
 
-  return { report, result }
+  return { report, dynamoDBResult }
 }
 
 const TableName = process.env.PERFORMANCE_TABLE_NAME

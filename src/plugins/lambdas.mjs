@@ -54,8 +54,8 @@ const plugin = {
           }
           else {
             await esbuild(
-              [ join(entryFileFolder, `${version}.js`) ],
-              join(outDir, `${version}-bundle.js`),
+              [ join(entryFileFolder, `${version}-dynamodb.js`) ],
+              join(outDir, `${version}-dynamodb-bundle.js`),
             )
           }
         }
