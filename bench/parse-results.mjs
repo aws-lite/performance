@@ -18,6 +18,7 @@ async function parseResults ({ results, region = 'us-west-2' }) {
   // Prefer `end` over `invokeEnd`: we don't need to factor response time to the Lambda API
   // In smaller scale testing the delta is consistently about ~10ms for our report payload
 
+  // Startup
   const coldstart = {}
   parseBenchRuns(coldstart, results, ({ invokeStart, init, start, end }) => {
     const duration = end - invokeStart
@@ -28,6 +29,7 @@ async function parseResults ({ results, region = 'us-west-2' }) {
   const init = {}
   parseBenchRuns(init, results, ({ init }) => init)
 
+  // DynamoDB
   const importDynamoDB = {}
   parseBenchRuns(importDynamoDB, results, ({ importDynamoDB }) => importDynamoDB.time, true)
 
@@ -40,11 +42,28 @@ async function parseResults ({ results, region = 'us-west-2' }) {
   const writeDynamoDB = {}
   parseBenchRuns(writeDynamoDB, results, ({ writeDynamoDB }) => writeDynamoDB.time, true)
 
-  const memory = {}
-  parseBenchRuns(memory, results, ({ peakMemory }) => peakMemory)
-
   const executionTimeDynamoDB = {}
   parseBenchRuns(executionTimeDynamoDB, results, ({ importDynamoDB, writeDynamoDB }) => writeDynamoDB.timeEnd - importDynamoDB.timeStart, true)
+
+  // S3
+  const importS3 = {}
+  parseBenchRuns(importS3, results, ({ importS3 }) => importS3.time, true)
+
+  const instantiateS3 = {}
+  parseBenchRuns(instantiateS3, results, ({ instantiateS3 }) => instantiateS3.time, true)
+
+  const readS3 = {}
+  parseBenchRuns(readS3, results, ({ readS3 }) => readS3.time, true)
+
+  const writeS3 = {}
+  parseBenchRuns(writeS3, results, ({ writeS3 }) => writeS3.time, true)
+
+  const executionTimeS3 = {}
+  parseBenchRuns(executionTimeS3, results, ({ importS3, writeS3 }) => writeS3.timeEnd - importS3.timeStart, true)
+
+  // Aggregate
+  const memory = {}
+  parseBenchRuns(memory, results, ({ peakMemory }) => peakMemory)
 
   const executionTimeAll = {}
   parseBenchRuns(executionTimeAll, results, ({ start, end }) => end - start)
@@ -55,14 +74,23 @@ async function parseResults ({ results, region = 'us-west-2' }) {
   console.log(`[Stats] Parsed performance statistics in ${Date.now() - start}ms`)
 
   const parsed = {
+    // Startup
     coldstart,
     init,
+    // DynamoDB
     importDynamoDB,
     instantiateDynamoDB,
     readDynamoDB,
     writeDynamoDB,
-    memory,
     executionTimeDynamoDB,
+    // S3
+    importS3,
+    instantiateS3,
+    readS3,
+    writeS3,
+    executionTimeS3,
+    // Aggregate
+    memory,
     executionTimeAll,
     totalTimeAll,
   }

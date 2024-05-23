@@ -12,9 +12,13 @@ timeout 30
 @plugins
 lambdas
 architect/plugin-storage-public
+architect/plugin-storage-private
 
 @storage-public
 assets
+
+@storage-private
+dummy-assets
 
 @tables
 results

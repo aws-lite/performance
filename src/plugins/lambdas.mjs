@@ -31,6 +31,10 @@ const plugin = {
             .Properties.Environment.Variables.PERFORMANCE_TABLE_NAME = {
               Ref: 'DummyDataTable',
             }
+          cloudformation.Resources[name]
+            .Properties.Environment.Variables.PERFORMANCE_BUCKET_NAME = {
+              Ref: 'DummyAssetsBucket',
+            }
         }
       }
     },
@@ -47,17 +51,15 @@ const plugin = {
               [ join(entryFileFolder, `${version}-client.js`) ],
               join(outDir, `${version}-client-bundle.js`),
             )
-            await esbuild(
-              [ join(entryFileFolder, `${version}-dynamodb.js`) ],
-              join(outDir, `${version}-dynamodb-bundle.js`),
-            )
           }
-          else {
-            await esbuild(
-              [ join(entryFileFolder, `${version}-dynamodb.js`) ],
-              join(outDir, `${version}-dynamodb-bundle.js`),
-            )
-          }
+          await esbuild(
+            [ join(entryFileFolder, `${version}-dynamodb.js`) ],
+            join(outDir, `${version}-dynamodb-bundle.js`),
+          )
+          await esbuild(
+            [ join(entryFileFolder, `${version}-s3.js`) ],
+            join(outDir, `${version}-s3-bundle.js`),
+          )
         }
       }
     },

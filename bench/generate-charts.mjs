@@ -24,6 +24,7 @@ export default async function generateCharts ({ data, metricToGraph, region, run
   const backgrounds = num => backgroundColor.map(i => `${i}${num}`)
 
   const charts = {
+    // Startup
     coldstart: {
       title: `Coldstart latency (ms)`,
       filename: 'coldstart',
@@ -32,6 +33,7 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       title: `Initialization latency (ms)`,
       filename: 'init',
     },
+    // DynamoDB
     importDynamoDB: {
       title: 'Import / require DynamoDB (ms)',
       filename: 'import-dynamodb',
@@ -44,22 +46,49 @@ export default async function generateCharts ({ data, metricToGraph, region, run
     },
     readDynamoDB: {
       title: 'DynamoDB - read one 100KB row (ms)',
-      filename: 'read',
+      filename: 'read-dynamodb',
       noControlTest: true,
     },
     writeDynamoDB: {
       title: 'DynamoDB - write one 100KB row (ms)',
-      filename: 'write',
+      filename: 'write-dynamodb',
       noControlTest: true,
     },
+    executionTimeDynamoDB: {
+      title: 'Time to execute (single client, DynamoDB), not including coldstart (ms)',
+      filename: 'execution-time-dynamodb',
+      noControlTest: true,
+    },
+    // S3
+    importS3: {
+      title: 'Import / require S3 (ms)',
+      filename: 'import-s3',
+      noControlTest: true,
+    },
+    instantiateS3: {
+      title: 'Instantiate an S3 client (ms)',
+      filename: 'instantiate-s3',
+      noControlTest: true,
+    },
+    readS3: {
+      title: 'S3 - read one 1MB object (ms)',
+      filename: 'read-s3',
+      noControlTest: true,
+    },
+    writeS3: {
+      title: 'S3 - write one 1MB object (ms)',
+      filename: 'write-s3',
+      noControlTest: true,
+    },
+    executionTimeS3: {
+      title: 'Time to execute (single client, S3), not including coldstart (ms)',
+      filename: 'execution-time-s3',
+      noControlTest: true,
+    },
+    // Aggregate
     memory: {
       title: 'Peak memory consumption over Lambda baseline (MB)',
       filename: 'memory',
-      excludeControl: true,
-    },
-    executionTimeDynamoDB: {
-      title: 'Time to execute (DynamoDB client only), not including coldstart (ms)',
-      filename: 'execution-time-dynamodb',
       excludeControl: true,
     },
     executionTimeAll: {

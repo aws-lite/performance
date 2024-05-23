@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { names as lambdae } from '../src/plugins/lambdas.mjs'
+import { names } from '../src/plugins/lambdas.mjs'
+import seedData from './seed-data.mjs'
 import parseResults from './parse-results.mjs'
 import awsLite from '@aws-lite/client'
 
@@ -18,35 +19,28 @@ async function main () {
   const aws = await awsLite({
     profile: 'openjsf',
     region,
-    plugins: [ import('@aws-lite/dynamodb'), import('@aws-lite/lambda'), import('@aws-lite/ssm') ],
+    plugins: [
+      import('@aws-lite/dynamodb'),
+      import('@aws-lite/lambda'),
+      import('@aws-lite/s3'),
+      import('@aws-lite/ssm'),
+    ],
   })
 
   console.log(`[Init] Let's get ready to benchmark SDK performance!`)
-
-  const tables = await aws.SSM.GetParametersByPath({ Path: `/Performance${env}/tables/` })
-  const dummyTable = tables.Parameters.find(({ Name }) => Name.includes('dummy-data')).Value
-  const resultsTable = tables.Parameters.find(({ Name }) => Name.includes('results')).Value
+  const { Parameters: allParams } = await aws.SSM.GetParametersByPath({
+    Path: `/Performance${env}/`,
+    Recursive: true,
+    paginate: true,
+  })
+  const resultsTable = allParams.find(({ Name }) => Name.endsWith('/tables/results'))?.Value
+  if (!resultsTable) throw ReferenceError('Results data table not found!')
 
   const ts = new Date().toISOString()
   const start = Date.now()
+  const lambdae = names // Reassign to a single Lambda for experimentation
 
-  // Check to see if database was seeded with dummy data
-  const dummyData = await aws.DynamoDB.GetItem({
-    TableName: dummyTable,
-    Key: { id: 'data' },
-  })
-  if (!dummyData.Item) {
-    const hundredKB = 1024 * 100
-    await aws.DynamoDB.PutItem({
-      TableName: dummyTable,
-      Item: {
-        id: 'data',
-        data: Buffer.alloc(hundredKB).toString('base64'),
-      },
-    })
-    console.log('[Init] Wrote 100KB dummy data row')
-  }
-  else console.log('[Init] Found 100KB dummy data row for benchmarking')
+  await seedData({ aws, allParams })
 
   for (let i = 1; i < (runs + 1); i++) {
 

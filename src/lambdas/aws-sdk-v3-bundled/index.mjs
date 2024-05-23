@@ -1,9 +1,11 @@
-import { run, TableName, Key } from '@architect/shared/run.js'
+import runner from '@architect/shared/run.js'
+const { run, DynamoDB, S3 } = runner
 
 export async function handler (event, context) {
   const commands = {}
 
   return await run({
+    // DynamoDB
     importDynamoDB: async () => {
       const {
         DynamoDBClient,
@@ -11,8 +13,8 @@ export async function handler (event, context) {
         GetCommand,
         PutCommand,
       } = await import('./aws-sdk-v3-dynamodb-bundle.js')
-      commands.GetCommand = GetCommand
-      commands.PutCommand = PutCommand
+      commands.DynamoDBGetCommand = GetCommand
+      commands.DynamoDBPutCommand = PutCommand
       return { DynamoDBClient, DynamoDBDocumentClient }
     },
 
@@ -24,14 +26,46 @@ export async function handler (event, context) {
     },
 
     readDynamoDB: async (docClient) => {
-      const command = new commands.GetCommand({ TableName, Key })
+      const { TableName, Key } = DynamoDB
+      const command = new commands.DynamoDBGetCommand({ TableName, Key })
       return await docClient.send(command)
     },
 
     writeDynamoDB: async (docClient, Item) => {
-      const command = new commands.PutCommand({ TableName, Item })
+      const { TableName } = DynamoDB
+      const command = new commands.DynamoDBPutCommand({ TableName, Item })
       return await docClient.send(command)
     },
-  }, context)
 
+    // S3
+    importS3: async () => {
+      const {
+        S3Client,
+        GetObjectCommand,
+        PutObjectCommand,
+      } = await import('./aws-sdk-v3-s3-bundle.js')
+      commands.S3GetObjectCommand = GetObjectCommand
+      commands.S3PutObjectCommand = PutObjectCommand
+      return S3Client
+    },
+
+    instantiateS3: async (S3Client) => {
+      const client = new S3Client({})
+      return client
+    },
+
+    readS3: async (client) => {
+      const { Bucket, Key } = S3
+      const command = new commands.S3GetObjectCommand({ Bucket, Key })
+      const result = await client.send(command)
+      const Body = await result.Body.transformToByteArray()
+      return Body
+    },
+
+    writeS3: async (client, Body) => {
+      const { Bucket, Key } = S3
+      const command = new commands.S3PutObjectCommand({ Bucket, Key, Body })
+      return await client.send(command)
+    },
+  }, context)
 }

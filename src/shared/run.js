@@ -1,36 +1,19 @@
 async function run (fns, context) {
   let {
     importDynamoDB, instantiateDynamoDB, readDynamoDB, writeDynamoDB,
+    importS3, instantiateS3, readS3, writeS3,
   } = fns
 
   let report = {
     id: context.awsRequestId,
     start: Date.now(),
-    importDynamoDB: {
-      memoryStart: null,
-      memoryEnd: null,
-      timeStart: null,
-      timeEnd: null,
-    },
-    instantiateDynamoDB: {
-      memoryStart: null,
-      memoryEnd: null,
-      timeStart: null,
-      timeEnd: null,
-    },
-    readDynamoDB: {
-      memoryStart: null,
-      memoryEnd: null,
-      timeStart: null,
-      timeEnd: null,
-    },
-    writeDynamoDB: {
-      memoryStart: null,
-      memoryEnd: null,
-      timeStart: null,
-      timeEnd: null,
-    },
   }
+  Object.keys(fns).forEach(k => report[k] = {
+    memoryStart: null,
+    memoryEnd: null,
+    timeStart: null,
+    timeEnd: null,
+  })
 
   function recordStart (step) {
     report[step].memoryStart = process.memoryUsage.rss()
@@ -43,30 +26,52 @@ async function run (fns, context) {
     report[step].memory = report[step].memoryEnd - report[step].memoryStart
   }
 
+  // DynamoDB
   recordStart('importDynamoDB')
-  const dynamoDBsdk = await importDynamoDB()
+  const DynamoDBSDK = await importDynamoDB()
   recordEnd('importDynamoDB')
 
   recordStart('instantiateDynamoDB')
-  const dynamoDBClient = await instantiateDynamoDB(dynamoDBsdk)
+  const DynamoDBClient = await instantiateDynamoDB(DynamoDBSDK)
   recordEnd('instantiateDynamoDB')
 
   recordStart('readDynamoDB')
-  const dynamoDBpayload = await readDynamoDB(dynamoDBClient)
+  const DynamoDBPayload = await readDynamoDB(DynamoDBClient)
   recordEnd('readDynamoDB')
 
   recordStart('writeDynamoDB')
-  const dynamoDBResult = await writeDynamoDB(dynamoDBClient, dynamoDBpayload.Item)
+  const DynamoDBResult = await writeDynamoDB(DynamoDBClient, DynamoDBPayload.Item)
   recordEnd('writeDynamoDB')
+
+  // S3
+  recordStart('importS3')
+  const S3SDK = await importS3()
+  recordEnd('importS3')
+
+  recordStart('instantiateS3')
+  const S3Client = await instantiateS3(S3SDK)
+  recordEnd('instantiateS3')
+
+  recordStart('readS3')
+  const S3Payload = await readS3(S3Client)
+  recordEnd('readS3')
+
+  recordStart('writeS3')
+  const S3Result = await writeS3(S3Client, S3Payload)
+  recordEnd('writeS3')
 
   // TODO add more clients + operations
 
   report.end = Date.now()
 
-  return { report, dynamoDBResult }
+  return { report, DynamoDBResult, S3Result }
 }
 
 const TableName = process.env.PERFORMANCE_TABLE_NAME
-const Key = { id: 'data' }
+const Bucket = process.env.PERFORMANCE_BUCKET_NAME
 
-module.exports = { run, TableName, Key }
+module.exports = {
+  run,
+  DynamoDB: { TableName,  Key: { id: 'data' } },
+  S3:       { Bucket,     Key: 'data' },
+}
