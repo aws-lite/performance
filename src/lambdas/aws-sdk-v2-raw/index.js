@@ -32,18 +32,19 @@ exports.handler = async function handler (event, context) {
     },
 
     instantiateS3: async (s3) => {
-      return new s3
+      return new s3()
     },
 
-    readS3: async (s3client) => {
+    readS3: async (S3Client) => {
       const { Bucket, Key } = S3
-      const result = await s3client.getObject({ Bucket, Key }).promise()
+      const result = await S3Client.getObject({ Bucket, Key }).promise()
       return result.Body
     },
 
-    writeS3: async (s3client, Body) => {
+    writeS3: async (S3Client, Body) => {
       const { Bucket, Key } = S3
-      return await s3client.putObject({ Bucket, Key, Body }).promise()
+      return await S3Client.putObject({ Bucket, Key, Body }).promise()
+    },
     },
   }, context)
 }

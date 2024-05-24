@@ -38,7 +38,10 @@ async function main () {
 
   const ts = new Date().toISOString()
   const start = Date.now()
-  const lambdae = names // Reassign to a single Lambda for experimentation
+  // Allow for `npm run bench $sdk...`
+  const lambdae = process.argv[2]
+    ? [ names[0], ...process.argv.slice(2) ]
+    : names
 
   await seedData({ aws, allParams })
 

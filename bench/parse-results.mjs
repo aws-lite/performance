@@ -1,6 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
-import { names } from '../src/plugins/lambdas.mjs'
 import generateCharts from './generate-charts.mjs'
 import { join } from 'node:path'
 import percentile from 'percentile'
@@ -127,6 +126,7 @@ async function parseResults ({ results, region = 'us-west-2' }) {
 }
 
 function parseBenchRuns (acc, results, mapFn, skipControl) {
+  const names = Object.keys(results)
   names.forEach(name => {
     if (name === 'control' && skipControl) return
     acc[name] = {}

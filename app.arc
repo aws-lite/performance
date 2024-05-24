@@ -7,7 +7,7 @@ memory 1024
 profile openjsf
 region us-west-2
 runtime nodejs20.x
-timeout 30
+timeout 60
 
 @plugins
 lambdas
