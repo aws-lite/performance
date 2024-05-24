@@ -27,104 +27,104 @@ export default async function generateCharts ({ data, metricToGraph, region, run
     // Startup
     coldstart: {
       title: `Coldstart latency (ms)`,
-      filename: 'coldstart',
+      filename: 'startup/coldstart',
     },
     init: {
       title: `Initialization latency (ms)`,
-      filename: 'init',
+      filename: 'startup/init',
     },
     // DynamoDB
     importDynamoDB: {
       title: 'Import / require DynamoDB (ms)',
-      filename: 'import-dynamodb',
+      filename: 'dynamodb/import',
       noControlTest: true,
     },
     instantiateDynamoDB: {
       title: 'Instantiate a DynamoDB client (ms)',
-      filename: 'instantiate-dynamodb',
+      filename: 'dynamodb/instantiate',
       noControlTest: true,
     },
     readDynamoDB: {
       title: 'DynamoDB - read one 100KB row (ms)',
-      filename: 'read-dynamodb',
+      filename: 'dynamodb/read',
       noControlTest: true,
     },
     writeDynamoDB: {
       title: 'DynamoDB - write one 100KB row (ms)',
-      filename: 'write-dynamodb',
+      filename: 'dynamodb/write',
       noControlTest: true,
     },
     executionTimeDynamoDB: {
       title: 'Time to execute (single client, DynamoDB), not including coldstart (ms)',
-      filename: 'execution-time-dynamodb',
+      filename: 'dynamodb/execution-time',
       noControlTest: true,
     },
     // S3
     importS3: {
       title: 'Import / require S3 (ms)',
-      filename: 'import-s3',
+      filename: 's3/import',
       noControlTest: true,
     },
     instantiateS3: {
       title: 'Instantiate an S3 client (ms)',
-      filename: 'instantiate-s3',
+      filename: 's3/instantiate',
       noControlTest: true,
     },
     readS3: {
       title: 'S3 - read one 1MB object (ms)',
-      filename: 'read-s3',
+      filename: 's3/read',
       noControlTest: true,
     },
     writeS3: {
       title: 'S3 - write one 1MB object (ms)',
-      filename: 'write-s3',
+      filename: 's3/write',
       noControlTest: true,
     },
     executionTimeS3: {
       title: 'Time to execute (single client, S3), not including coldstart (ms)',
-      filename: 'execution-time-s3',
+      filename: 's3/execution-time',
       noControlTest: true,
     },
     // IAM
     importIAM: {
       title: 'Import / require IAM (ms)',
-      filename: 'import-iam',
+      filename: 'iam/import',
       noControlTest: true,
     },
     instantiateIAM: {
       title: 'Instantiate an IAM client (ms)',
-      filename: 'instantiate-iam',
+      filename: 'iam/instantiate',
       noControlTest: true,
     },
     readIAM: {
       title: 'IAM - read one IAM role (ms)',
-      filename: 'read-iam',
+      filename: 'iam/read',
       noControlTest: true,
     },
     writeIAM: {
       title: 'IAM - write to one IAM role (ms)',
-      filename: 'write-iam',
+      filename: 'iam/write',
       noControlTest: true,
     },
     executionTimeIAM: {
       title: 'Time to execute (single client, IAM), not including coldstart (ms)',
-      filename: 'execution-time-iam',
+      filename: 'iam/execution-time',
       noControlTest: true,
     },
     // Aggregate
     memory: {
       title: 'Peak memory consumption over Lambda baseline (MB)',
-      filename: 'memory',
+      filename: 'aggregate/memory',
       excludeControl: true,
     },
     executionTimeAll: {
       title: 'Time to execute (all benchmarked clients), not including coldstart (ms)',
-      filename: 'execution-time-all',
+      filename: 'aggregate/execution-time-all',
       excludeControl: true,
     },
     totalTimeAll: {
       title: 'Total time to respond (all benchmarked clients), including coldstart (ms)',
-      filename: 'total-time-all',
+      filename: 'aggregate/total-time-all',
       excludeControl: true,
     },
   }
@@ -179,7 +179,10 @@ export default async function generateCharts ({ data, metricToGraph, region, run
     config.options.plugins.title.text = title
     if (options) config.options = { ...config.options, ...options }
     chart.setConfig(config)
-    await chart.toFile(join(tmp, filename + '.png'))
+    const [ folder, file ] = filename.split('/')
+    const path = join(tmp, folder)
+    if (!existsSync(path)) mkdirSync(path, { recursive: true })
+    await chart.toFile(join(path, file + '.png'))
 
     // Now run it again in dark mode
     const light = '#E6EDF3'
