@@ -14,6 +14,11 @@ const names = [
   'aws-sdk-v3-raw',
   'aws-sdk-v3-bundled',
 ]
+const services = [
+  'dynamodb',
+  's3',
+  'iam',
+]
 const lambdae = names.concat('invoker')
 
 const plugin = {
@@ -37,6 +42,23 @@ const plugin = {
             }
         }
       }
+
+      // Enable access to dummy role
+      cloudformation.Resources.Role.Properties.Policies.push({
+        PolicyName: 'IAMDummyPolicy',
+        PolicyDocument: {
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: [
+                'iam:GetRole',
+                'iam:UpdateRole',
+              ],
+              Resource: 'arn:aws:iam::*:role/aws-lite-dummy-iam-role',
+            },
+          ],
+        },
+      })
     },
   },
   hydrate: {
@@ -52,14 +74,12 @@ const plugin = {
               join(outDir, `${version}-client-bundle.js`),
             )
           }
-          await esbuild(
-            [ join(entryFileFolder, `${version}-dynamodb.js`) ],
-            join(outDir, `${version}-dynamodb-bundle.js`),
-          )
-          await esbuild(
-            [ join(entryFileFolder, `${version}-s3.js`) ],
-            join(outDir, `${version}-s3-bundle.js`),
-          )
+          for (const service of services) {
+            await esbuild(
+              [ join(entryFileFolder, `${version}-${service}.js`) ],
+              join(outDir, `${version}-${service}-bundle.js`),
+            )
+          }
         }
       }
     },

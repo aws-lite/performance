@@ -60,6 +60,22 @@ async function parseResults ({ results, region = 'us-west-2' }) {
   const executionTimeS3 = {}
   parseBenchRuns(executionTimeS3, results, ({ importS3, writeS3 }) => writeS3.timeEnd - importS3.timeStart, true)
 
+  // IAM
+  const importIAM = {}
+  parseBenchRuns(importIAM, results, ({ importIAM }) => importIAM.time, true)
+
+  const instantiateIAM = {}
+  parseBenchRuns(instantiateIAM, results, ({ instantiateIAM }) => instantiateIAM.time, true)
+
+  const readIAM = {}
+  parseBenchRuns(readIAM, results, ({ readIAM }) => readIAM.time, true)
+
+  const writeIAM = {}
+  parseBenchRuns(writeIAM, results, ({ writeIAM }) => writeIAM.time, true)
+
+  const executionTimeIAM = {}
+  parseBenchRuns(executionTimeIAM, results, ({ importIAM, writeIAM }) => writeIAM.timeEnd - importIAM.timeStart, true)
+
   // Aggregate
   const memory = {}
   parseBenchRuns(memory, results, ({ peakMemory }) => peakMemory)
@@ -88,6 +104,12 @@ async function parseResults ({ results, region = 'us-west-2' }) {
     readS3,
     writeS3,
     executionTimeS3,
+    // IAM
+    importIAM,
+    instantiateIAM,
+    readIAM,
+    writeIAM,
+    executionTimeIAM,
     // Aggregate
     memory,
     executionTimeAll,

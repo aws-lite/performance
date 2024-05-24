@@ -2,6 +2,7 @@ async function run (fns, context) {
   let {
     importDynamoDB, instantiateDynamoDB, readDynamoDB, writeDynamoDB,
     importS3, instantiateS3, readS3, writeS3,
+    importIAM, instantiateIAM, readIAM, writeIAM,
   } = fns
 
   let report = {
@@ -60,18 +61,37 @@ async function run (fns, context) {
   const S3Result = await writeS3(S3Client, S3Payload)
   recordEnd('writeS3')
 
+  // IAM
+  recordStart('importIAM')
+  const IAMSDK = await importIAM()
+  recordEnd('importIAM')
+
+  recordStart('instantiateIAM')
+  const IAMClient = await instantiateIAM(IAMSDK)
+  recordEnd('instantiateIAM')
+
+  recordStart('readIAM')
+  await readIAM(IAMClient)
+  recordEnd('readIAM')
+
+  recordStart('writeIAM')
+  const IAMResult = await writeIAM(IAMClient)
+  recordEnd('writeIAM')
+
   // TODO add more clients + operations
 
   report.end = Date.now()
 
-  return { report, DynamoDBResult, S3Result }
+  return { report, DynamoDBResult, S3Result, IAMResult }
 }
 
 const TableName = process.env.PERFORMANCE_TABLE_NAME
 const Bucket = process.env.PERFORMANCE_BUCKET_NAME
+const RoleName = 'aws-lite-dummy-iam-role'
 
 module.exports = {
   run,
   DynamoDB: { TableName,  Key: { id: 'data' } },
   S3:       { Bucket,     Key: 'data' },
+  IAM:      { RoleName,   Description: () => `Updated ${new Date().toISOString()}` },
 }

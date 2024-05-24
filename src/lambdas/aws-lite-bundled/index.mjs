@@ -1,5 +1,5 @@
 import runner from '@architect/shared/run.js'
-const { run, DynamoDB, S3 } = runner
+const { run, DynamoDB, S3, IAM } = runner
 
 export async function handler (event, context) {
   const plugins = {}
@@ -44,6 +44,26 @@ export async function handler (event, context) {
     writeS3: async (aws, Body) => {
       const { Bucket, Key } = S3
       return await aws.S3.PutObject({ Bucket, Key, Body })
+    },
+
+    // IAM
+    importIAM: async () => {
+      plugins.IAM = await import('./aws-lite-iam-bundle.js')
+      return (await import('./aws-lite-client-bundle.js')).default
+    },
+
+    instantiateIAM: async (awsLite) => {
+      return await awsLite({ plugins: [ plugins.IAM ] })
+    },
+
+    readIAM: async (aws) => {
+      const { RoleName } = IAM
+      await aws.IAM.GetRole({ RoleName })
+    },
+
+    writeIAM: async (aws) => {
+      const { RoleName, Description } = IAM
+      return await aws.IAM.UpdateRole({ RoleName, Description: Description() })
     },
   }, context)
 }

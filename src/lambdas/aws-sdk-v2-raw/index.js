@@ -1,4 +1,4 @@
-let { run, DynamoDB, S3 } = require('@architect/shared/run.js')
+let { run, DynamoDB, S3, IAM } = require('@architect/shared/run.js')
 
 exports.handler = async function handler (event, context) {
 
@@ -45,6 +45,25 @@ exports.handler = async function handler (event, context) {
       const { Bucket, Key } = S3
       return await S3Client.putObject({ Bucket, Key, Body }).promise()
     },
+
+    // IAM
+    importIAM: async () => {
+      const iam = require('aws-sdk/clients/iam')
+      return iam
+    },
+
+    instantiateIAM: async (iam) => {
+      return new iam()
+    },
+
+    readIAM: async (IAMClient) => {
+      const { RoleName } = IAM
+      await IAMClient.getRole({ RoleName }).promise()
+    },
+
+    writeIAM: async (IAMClient) => {
+      const { RoleName, Description } = IAM
+      return await IAMClient.updateRole({ RoleName, Description: Description() }).promise()
     },
   }, context)
 }

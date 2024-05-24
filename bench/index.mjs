@@ -21,6 +21,7 @@ async function main () {
     region,
     plugins: [
       import('@aws-lite/dynamodb'),
+      import('@aws-lite/iam'),
       import('@aws-lite/lambda'),
       import('@aws-lite/s3'),
       import('@aws-lite/ssm'),

@@ -85,6 +85,32 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       filename: 'execution-time-s3',
       noControlTest: true,
     },
+    // IAM
+    importIAM: {
+      title: 'Import / require IAM (ms)',
+      filename: 'import-iam',
+      noControlTest: true,
+    },
+    instantiateIAM: {
+      title: 'Instantiate an IAM client (ms)',
+      filename: 'instantiate-iam',
+      noControlTest: true,
+    },
+    readIAM: {
+      title: 'IAM - read one IAM role (ms)',
+      filename: 'read-iam',
+      noControlTest: true,
+    },
+    writeIAM: {
+      title: 'IAM - write to one IAM role (ms)',
+      filename: 'write-iam',
+      noControlTest: true,
+    },
+    executionTimeIAM: {
+      title: 'Time to execute (single client, IAM), not including coldstart (ms)',
+      filename: 'execution-time-iam',
+      noControlTest: true,
+    },
     // Aggregate
     memory: {
       title: 'Peak memory consumption over Lambda baseline (MB)',

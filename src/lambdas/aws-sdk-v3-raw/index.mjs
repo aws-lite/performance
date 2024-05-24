@@ -1,5 +1,5 @@
 import runner from '@architect/shared/run.js'
-const { run, DynamoDB, S3 } = runner
+const { run, DynamoDB, S3, IAM } = runner
 
 export async function handler (event, context) {
   const commands = {}
@@ -61,6 +61,34 @@ export async function handler (event, context) {
     writeS3: async (client, Body) => {
       const { Bucket, Key } = S3
       const command = new commands.S3PutObjectCommand({ Bucket, Key, Body })
+      return await client.send(command)
+    },
+
+    // IAM
+    importIAM: async () => {
+      const {
+        IAMClient,
+        GetRoleCommand,
+        UpdateRoleCommand,
+      } = await import('@aws-sdk/client-iam')
+      commands.IAMGetRoleCommand = GetRoleCommand
+      commands.IAMUpdateRoleCommand = UpdateRoleCommand
+      return IAMClient
+    },
+
+    instantiateIAM: async (IAMClient) => {
+      return new IAMClient({})
+    },
+
+    readIAM: async (client) => {
+      const { RoleName } = IAM
+      const command = new commands.IAMGetRoleCommand({ RoleName })
+      await client.send(command)
+    },
+
+    writeIAM: async (client) => {
+      const { RoleName, Description } = IAM
+      const command = new commands.IAMUpdateRoleCommand({ RoleName,  Description: Description() })
       return await client.send(command)
     },
   }, context)
