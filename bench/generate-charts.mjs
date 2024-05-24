@@ -129,6 +129,7 @@ export default async function generateCharts ({ data, metricToGraph, region, run
     },
   }
 
+  const files = []
   const options = {
     plugins: {
       legend: {
@@ -151,7 +152,7 @@ export default async function generateCharts ({ data, metricToGraph, region, run
 
   for (const [ name, metric ] of Object.entries(charts)) {
     const start = Date.now()
-    const { title, filename, options, noControlTest, excludeControl } = metric
+    const { title, options, noControlTest, excludeControl } = metric
     const chart = new ChartJsImage()
     chart
       .setChartJsVersion('4')
@@ -179,10 +180,13 @@ export default async function generateCharts ({ data, metricToGraph, region, run
     config.options.plugins.title.text = title
     if (options) config.options = { ...config.options, ...options }
     chart.setConfig(config)
-    const [ folder, file ] = filename.split('/')
+    const [ folder, filename ] = metric.filename.split('/')
     const path = join(tmp, folder)
     if (!existsSync(path)) mkdirSync(path, { recursive: true })
-    await chart.toFile(join(path, file + '.png'))
+    const file = filename + '.png'
+    const fileDark = filename + '-dark.png'
+    files.push(join(folder, file), join(folder, fileDark))
+    await chart.toFile(join(path, file))
 
     // Now run it again in dark mode
     const light = '#E6EDF3'
@@ -201,7 +205,7 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       },
     }
     chart.setConfig(config)
-    await chart.toFile(join(tmp, filename + '-dark.png'))
+    await chart.toFile(join(path, fileDark))
 
     console.log(`[Charts] Graphed: '${title}' in ${Date.now() - start}ms`)
   }
@@ -217,10 +221,10 @@ export default async function generateCharts ({ data, metricToGraph, region, run
   const Bucket = Parameter.Value
   const CacheControl = 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
 
-  const files = readdirSync(tmp)
-  writeFileSync(join(tmp, 'assets.json'), JSON.stringify(files, null, 2))
-  files.push('assets.json')
-  for (const Key of files) {
+  const jsonAssets = readdirSync(tmp).filter(f => f.endsWith('.json'))
+  const assets = [ ...new Set(jsonAssets.concat(files, 'assets.json')) ]
+  writeFileSync(join(tmp, 'assets.json'), JSON.stringify(assets, null, 2))
+  for (const Key of assets) {
     // TODO set caching for a little while once things settle
     await aws.S3.PutObject({
       Bucket,
