@@ -18,6 +18,7 @@ const services = [
   'dynamodb',
   's3',
   'iam',
+  'cloudformation',
 ]
 const lambdae = names.concat('invoker')
 
@@ -43,9 +44,9 @@ const plugin = {
         }
       }
 
-      // Enable access to dummy role
+      // Enable access to dummy resources
       cloudformation.Resources.Role.Properties.Policies.push({
-        PolicyName: 'IAMDummyPolicy',
+        PolicyName: 'DummyResourcePolicy',
         PolicyDocument: {
           Statement: [
             {
@@ -53,8 +54,13 @@ const plugin = {
               Action: [
                 'iam:GetRole',
                 'iam:UpdateRole',
+                'cloudformation:ListStackResources',
+                'cloudformation:UpdateTerminationProtection',
               ],
-              Resource: 'arn:aws:iam::*:role/aws-lite-dummy-iam-role',
+              Resource: [
+                'arn:aws:iam::*:role/aws-lite-dummy-iam-role',
+                'arn:aws:cloudformation:*:*:*',
+              ],
             },
           ],
         },

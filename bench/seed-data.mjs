@@ -3,7 +3,7 @@ const MB = KB * KB
 const hundredKB = 100 * KB
 
 import runner from '../src/shared/run.js'
-const { DynamoDB, S3, IAM } = runner
+const { DynamoDB, S3, IAM, CloudFormation } = runner
 
 export default async function seedData ({ aws, allParams }) {
   /**
@@ -85,5 +85,21 @@ export default async function seedData ({ aws, allParams }) {
       },
     })
     console.log('[Init] Created dummy IAM role')
+  }
+
+  /**
+   * CloudFormation
+   */
+  try {
+    await aws.CloudFormation.ListStackResources({ StackName: CloudFormation.StackName })
+    console.log(`[Init] Found dummy CloudFormation stack for benchmarking`)
+  }
+  catch (err) {
+    if (err.statusCode !== 400) throw err
+    await aws.CloudFormation.CreateStack({
+      StackName: CloudFormation.StackName,
+      ...CloudFormation.StackParams,
+    })
+    console.log(`[Init] Created dummy CloudFormation stack`)
   }
 }

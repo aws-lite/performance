@@ -1,5 +1,5 @@
 import runner from '@architect/shared/run.js'
-const { run, DynamoDB, S3, IAM } = runner
+const { run, DynamoDB, S3, IAM, CloudFormation } = runner
 
 export async function handler (event, context) {
   const plugins = {}
@@ -64,6 +64,26 @@ export async function handler (event, context) {
     writeIAM: async (aws) => {
       const { RoleName, Description } = IAM
       return await aws.IAM.UpdateRole({ RoleName, Description: Description() })
+    },
+
+    // CloudFormation
+    importCloudFormation: async () => {
+      plugins.CloudFormation = await import('./aws-lite-cloudformation-bundle.js')
+      return (await import('./aws-lite-client-bundle.js')).default
+    },
+
+    instantiateCloudFormation: async (awsLite) => {
+      return await awsLite({ plugins: [ plugins.CloudFormation ] })
+    },
+
+    readCloudFormation: async (aws) => {
+      const { StackName } = CloudFormation
+      await aws.CloudFormation.ListStackResources({ StackName })
+    },
+
+    writeCloudFormation: async (aws) => {
+      const { StackName } = CloudFormation
+      return await aws.CloudFormation.UpdateTerminationProtection({ StackName, EnableTerminationProtection: false })
     },
   }, context)
 }

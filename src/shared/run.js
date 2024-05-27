@@ -3,6 +3,7 @@ async function run (fns, context) {
     importDynamoDB, instantiateDynamoDB, readDynamoDB, writeDynamoDB,
     importS3, instantiateS3, readS3, writeS3,
     importIAM, instantiateIAM, readIAM, writeIAM,
+    importCloudFormation, instantiateCloudFormation, readCloudFormation, writeCloudFormation,
   } = fns
 
   let report = {
@@ -78,20 +79,60 @@ async function run (fns, context) {
   const IAMResult = await writeIAM(IAMClient)
   recordEnd('writeIAM')
 
+  // CloudFormation
+  recordStart('importCloudFormation')
+  const CloudFormationSDK = await importCloudFormation()
+  recordEnd('importCloudFormation')
+
+  recordStart('instantiateCloudFormation')
+  const CloudFormationClient = await instantiateCloudFormation(CloudFormationSDK)
+  recordEnd('instantiateCloudFormation')
+
+  recordStart('readCloudFormation')
+  await readCloudFormation(CloudFormationClient)
+  recordEnd('readCloudFormation')
+
+  recordStart('writeCloudFormation')
+  const CloudFormationResult = await writeCloudFormation(CloudFormationClient)
+  recordEnd('writeCloudFormation')
+
   // TODO add more clients + operations
 
   report.end = Date.now()
 
-  return { report, DynamoDBResult, S3Result, IAMResult }
+  return { report, DynamoDBResult, S3Result, IAMResult, CloudFormationResult }
 }
+
+const update = () => `Updated ${new Date().toISOString()}`
 
 const TableName = process.env.PERFORMANCE_TABLE_NAME
 const Bucket = process.env.PERFORMANCE_BUCKET_NAME
 const RoleName = 'aws-lite-dummy-iam-role'
+const StackName = 'aws-lite-dummy-stack'
+const StackParams = {
+  TemplateBody: {
+    AWSTemplateFormatVersion: '2010-09-09',
+    Transform: 'AWS::Serverless-2016-10-31',
+    Description: update(),
+    Resources: {
+      Param: {
+        Type: 'AWS::SSM::Parameter',
+        Properties: {
+          Type: 'String',
+          Name: 'dummy-ssm-param',
+          Value: 'hello',
+        },
+      },
+    },
+    Outputs: {},
+  },
+  Capabilities: [ 'CAPABILITY_AUTO_EXPAND' ],
+}
 
 module.exports = {
   run,
-  DynamoDB: { TableName,  Key: { id: 'data' } },
-  S3:       { Bucket,     Key: 'data' },
-  IAM:      { RoleName,   Description: () => `Updated ${new Date().toISOString()}` },
+  DynamoDB:       { TableName,  Key: { id: 'data' } },
+  S3:             { Bucket,     Key: 'data' },
+  IAM:            { RoleName,   Description: update },
+  CloudFormation: { StackName,  Description: update, StackParams },
 }

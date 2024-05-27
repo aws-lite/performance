@@ -1,5 +1,5 @@
 import runner from '@architect/shared/run.js'
-const { run, DynamoDB, S3, IAM } = runner
+const { run, DynamoDB, S3, IAM, CloudFormation } = runner
 
 export async function handler (event, context) {
   const commands = {}
@@ -89,6 +89,34 @@ export async function handler (event, context) {
     writeIAM: async (client) => {
       const { RoleName, Description } = IAM
       const command = new commands.IAMUpdateRoleCommand({ RoleName,  Description: Description() })
+      return await client.send(command)
+    },
+
+    // CloudFormation
+    importCloudFormation: async () => {
+      const {
+        CloudFormationClient,
+        ListStackResourcesCommand,
+        UpdateTerminationProtectionCommand,
+      } = await import('@aws-sdk/client-cloudformation')
+      commands.CloudFormationListStackResourcesCommand = ListStackResourcesCommand
+      commands.CloudFormationUpdateTerminationProtectionCommand = UpdateTerminationProtectionCommand
+      return CloudFormationClient
+    },
+
+    instantiateCloudFormation: async (CloudFormationClient) => {
+      return new CloudFormationClient({})
+    },
+
+    readCloudFormation: async (client) => {
+      const { StackName } = CloudFormation
+      const command = new commands.CloudFormationListStackResourcesCommand({ StackName })
+      return await client.send(command)
+    },
+
+    writeCloudFormation: async (client) => {
+      const { StackName } = CloudFormation
+      const command = new commands.CloudFormationUpdateTerminationProtectionCommand({ StackName, EnableTerminationProtection: false })
       return await client.send(command)
     },
   }, context)

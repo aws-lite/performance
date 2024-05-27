@@ -111,6 +111,32 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       filename: 'iam/execution-time',
       noControlTest: true,
     },
+    // CloudFormation
+    importCloudFormation: {
+      title: 'Import / require CloudFormation (ms)',
+      filename: 'cloudformation/import',
+      noControlTest: true,
+    },
+    instantiateCloudFormation: {
+      title: 'Instantiate a CloudFormation client (ms)',
+      filename: 'cloudformation/instantiate',
+      noControlTest: true,
+    },
+    readCloudFormation: {
+      title: 'CloudFormation - read one CloudFormation stack (ms)',
+      filename: 'cloudformation/read',
+      noControlTest: true,
+    },
+    writeCloudFormation: {
+      title: 'CloudFormation - write to one CloudFormation stack (ms)',
+      filename: 'cloudformation/write',
+      noControlTest: true,
+    },
+    executionTimeCloudFormation: {
+      title: 'Time to execute (single client, CloudFormation), not including coldstart (ms)',
+      filename: 'cloudformation/execution-time',
+      noControlTest: true,
+    },
     // Aggregate
     memory: {
       title: 'Peak memory consumption over Lambda baseline (MB)',

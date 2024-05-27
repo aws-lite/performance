@@ -1,4 +1,4 @@
-let { run, DynamoDB, S3, IAM } = require('@architect/shared/run.js')
+let { run, DynamoDB, S3, IAM, CloudFormation } = require('@architect/shared/run.js')
 
 exports.handler = async function handler (event, context) {
 
@@ -64,6 +64,26 @@ exports.handler = async function handler (event, context) {
     writeIAM: async (IAMClient) => {
       const { RoleName, Description } = IAM
       return await IAMClient.updateRole({ RoleName, Description: Description() }).promise()
+    },
+
+    // CloudFormation
+    importCloudFormation: async () => {
+      const cloudformation = require('./aws-sdk-v2-cloudformation-bundle.js')
+      return cloudformation
+    },
+
+    instantiateCloudFormation: async (cfn) => {
+      return new cfn()
+    },
+
+    readCloudFormation: async (CloudFormationClient) => {
+      const { StackName } = CloudFormation
+      await CloudFormationClient.listStackResources({ StackName }).promise()
+    },
+
+    writeCloudFormation: async (CloudFormationClient) => {
+      const { StackName } = CloudFormation
+      return await CloudFormationClient.updateTerminationProtection({ StackName, EnableTerminationProtection: false }).promise()
     },
   }, context)
 }
