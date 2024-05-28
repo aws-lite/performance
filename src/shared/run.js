@@ -128,8 +128,6 @@ async function run (fns, context) {
   const STSResult = await readSTS(STSClient)
   recordEnd('readSTS')
 
-  // TODO add more clients + operations
-
   report.end = Date.now()
 
   return { report, DynamoDBResult, S3Result, IAMResult, CloudFormationResult, LambdaResult, STSResult }
