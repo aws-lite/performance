@@ -19,6 +19,7 @@ const services = [
   's3',
   'iam',
   'cloudformation',
+  'lambda',
 ]
 const lambdae = names.concat('invoker')
 
@@ -65,14 +66,17 @@ const plugin = {
             {
               Effect: 'Allow',
               Action: [
-                'iam:GetRole',
-                'iam:UpdateRole',
                 'cloudformation:ListStackResources',
                 'cloudformation:UpdateTerminationProtection',
+                'iam:GetRole',
+                'iam:UpdateRole',
+                'lambda:GetFunctionConfiguration',
+                'lambda:UpdateFunctionConfiguration',
               ],
               Resource: [
-                'arn:aws:iam::*:role/aws-lite-dummy-iam-role',
                 'arn:aws:cloudformation:*:*:*',
+                'arn:aws:lambda:*:*:*:*',
+                'arn:aws:iam::*:role/aws-lite-dummy-iam-role',
               ],
             },
           ],

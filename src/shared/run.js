@@ -4,6 +4,7 @@ async function run (fns, context) {
     importS3, instantiateS3, readS3, writeS3,
     importIAM, instantiateIAM, readIAM, writeIAM,
     importCloudFormation, instantiateCloudFormation, readCloudFormation, writeCloudFormation,
+    importLambda, instantiateLambda, readLambda, writeLambda,
   } = fns
 
   let report = {
@@ -96,11 +97,28 @@ async function run (fns, context) {
   const CloudFormationResult = await writeCloudFormation(CloudFormationClient)
   recordEnd('writeCloudFormation')
 
+  // Lambda
+  recordStart('importLambda')
+  const LambdaSDK = await importLambda()
+  recordEnd('importLambda')
+
+  recordStart('instantiateLambda')
+  const LambdaClient = await instantiateLambda(LambdaSDK)
+  recordEnd('instantiateLambda')
+
+  recordStart('readLambda')
+  await readLambda(LambdaClient)
+  recordEnd('readLambda')
+
+  recordStart('writeLambda')
+  const LambdaResult = await writeLambda(LambdaClient)
+  recordEnd('writeLambda')
+
   // TODO add more clients + operations
 
   report.end = Date.now()
 
-  return { report, DynamoDBResult, S3Result, IAMResult, CloudFormationResult }
+  return { report, DynamoDBResult, S3Result, IAMResult, CloudFormationResult, LambdaResult }
 }
 
 const update = () => `Updated ${new Date().toISOString()}`
@@ -133,7 +151,7 @@ const StackParams = {
 
 module.exports = {
   run,
-  DynamoDB:       { TableName,  Key: { id: 'data' } },
+  DynamoDB:       { TableName,    Key: { id: 'data' } },
   S3:             { Bucket,       Key: 'data' },
   IAM:            { RoleName,     Description: update },
   CloudFormation: { StackName,    Description: update, StackParams },

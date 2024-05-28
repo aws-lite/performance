@@ -33,6 +33,7 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       title: `Initialization latency (ms)`,
       filename: 'startup/init',
     },
+
     // DynamoDB
     importDynamoDB: {
       title: 'Import / require DynamoDB (ms)',
@@ -59,6 +60,7 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       filename: 'dynamodb/execution-time',
       noControlTest: true,
     },
+
     // S3
     importS3: {
       title: 'Import / require S3 (ms)',
@@ -85,6 +87,7 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       filename: 's3/execution-time',
       noControlTest: true,
     },
+
     // IAM
     importIAM: {
       title: 'Import / require IAM (ms)',
@@ -111,6 +114,7 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       filename: 'iam/execution-time',
       noControlTest: true,
     },
+
     // CloudFormation
     importCloudFormation: {
       title: 'Import / require CloudFormation (ms)',
@@ -137,6 +141,34 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       filename: 'cloudformation/execution-time',
       noControlTest: true,
     },
+
+    // Lambda
+    importLambda: {
+      title: 'Import / require Lambda (ms)',
+      filename: 'lambda/import',
+      noControlTest: true,
+    },
+    instantiateLambda: {
+      title: 'Instantiate a Lambda client (ms)',
+      filename: 'lambda/instantiate',
+      noControlTest: true,
+    },
+    readLambda: {
+      title: 'Lambda - read one Lambda configuration (ms)',
+      filename: 'lambda/read',
+      noControlTest: true,
+    },
+    writeLambda: {
+      title: 'Lambda - write to one Lambda configuration (ms)',
+      filename: 'lambda/write',
+      noControlTest: true,
+    },
+    executionTimeLambda: {
+      title: 'Time to execute (single client, Lambda), not including coldstart (ms)',
+      filename: 'lambda/execution-time',
+      noControlTest: true,
+    },
+
     // Aggregate
     memory: {
       title: 'Peak memory consumption over Lambda baseline (MB)',

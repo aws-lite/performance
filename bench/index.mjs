@@ -21,8 +21,8 @@ async function main () {
     profile: 'openjsf',
     region,
     plugins: [
-      import('@aws-lite/dynamodb'),
       import('@aws-lite/cloudformation'),
+      import('@aws-lite/dynamodb'),
       import('@aws-lite/iam'),
       import('@aws-lite/lambda'),
       import('@aws-lite/s3'),

@@ -92,6 +92,22 @@ async function parseResults ({ results, region = 'us-west-2' }) {
   const executionTimeCloudFormation = {}
   parseBenchRuns(executionTimeCloudFormation, results, ({ importCloudFormation, writeCloudFormation }) => writeCloudFormation.timeEnd - importCloudFormation.timeStart, true)
 
+  // Lambda
+  const importLambda = {}
+  parseBenchRuns(importLambda, results, ({ importLambda }) => importLambda.time, true)
+
+  const instantiateLambda = {}
+  parseBenchRuns(instantiateLambda, results, ({ instantiateLambda }) => instantiateLambda.time, true)
+
+  const readLambda = {}
+  parseBenchRuns(readLambda, results, ({ readLambda }) => readLambda.time, true)
+
+  const writeLambda = {}
+  parseBenchRuns(writeLambda, results, ({ writeLambda }) => writeLambda.time, true)
+
+  const executionTimeLambda = {}
+  parseBenchRuns(executionTimeLambda, results, ({ importLambda, writeLambda }) => writeLambda.timeEnd - importLambda.timeStart, true)
+
   // Aggregate
   const memory = {}
   parseBenchRuns(memory, results, ({ peakMemory }) => peakMemory)
@@ -132,6 +148,12 @@ async function parseResults ({ results, region = 'us-west-2' }) {
     readCloudFormation,
     writeCloudFormation,
     executionTimeCloudFormation,
+    // Lambda
+    importLambda,
+    instantiateLambda,
+    readLambda,
+    writeLambda,
+    executionTimeLambda,
     // Aggregate
     memory,
     executionTimeAll,
