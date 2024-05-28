@@ -19,7 +19,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@architect/architect": "^11.0.12",
+    "@architect/architect": "^11.0.13",
     "@architect/eslint-config": "^3.0.0",
     "@architect/plugin-storage-private": "^1.0.1",
     "@architect/plugin-storage-public": "^1.0.2",
@@ -30,16 +30,17 @@
     "@aws-lite/lambda": "latest",
     "@aws-lite/s3": "latest",
     "@aws-lite/ssm": "latest",
-    "@aws-sdk/client-cloudformation": "^3.572.0",
+    "@aws-sdk/client-cloudformation": "^3.583.0",
     "@aws-sdk/client-dynamodb": "latest",
-    "@aws-sdk/client-iam": "^3.572.0",
-    "@aws-sdk/client-s3": "^3.572.0",
+    "@aws-sdk/client-iam": "^3.583.0",
+    "@aws-sdk/client-lambda": "^3.583.0",
+    "@aws-sdk/client-s3": "^3.583.0",
     "@aws-sdk/lib-dynamodb": "latest",
     "aws-sdk": "latest",
-    "chart.js": "^4.4.2",
+    "chart.js": "^4.4.3",
     "chartjs-to-image": "^1.2.2",
-    "esbuild": "^0.21.1",
-    "eslint": "^9.2.0",
+    "esbuild": "^0.21.4",
+    "eslint": "^9.3.0",
     "percentile": "^1.6.0"
   }
 }
