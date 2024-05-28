@@ -100,12 +100,12 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       noControlTest: true,
     },
     readIAM: {
-      title: 'IAM - read one IAM role (ms)',
+      title: 'IAM - read one role (ms)',
       filename: 'iam/read',
       noControlTest: true,
     },
     writeIAM: {
-      title: 'IAM - write to one IAM role (ms)',
+      title: 'IAM - write to one role (ms)',
       filename: 'iam/write',
       noControlTest: true,
     },
@@ -127,12 +127,12 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       noControlTest: true,
     },
     readCloudFormation: {
-      title: 'CloudFormation - read one CloudFormation stack (ms)',
+      title: 'CloudFormation - read one stack (ms)',
       filename: 'cloudformation/read',
       noControlTest: true,
     },
     writeCloudFormation: {
-      title: 'CloudFormation - write to one CloudFormation stack (ms)',
+      title: 'CloudFormation - write to one stack (ms)',
       filename: 'cloudformation/write',
       noControlTest: true,
     },
@@ -154,18 +154,40 @@ export default async function generateCharts ({ data, metricToGraph, region, run
       noControlTest: true,
     },
     readLambda: {
-      title: 'Lambda - read one Lambda configuration (ms)',
+      title: 'Lambda - read one configuration (ms)',
       filename: 'lambda/read',
       noControlTest: true,
     },
     writeLambda: {
-      title: 'Lambda - write to one Lambda configuration (ms)',
+      title: 'Lambda - write to one configuration (ms)',
       filename: 'lambda/write',
       noControlTest: true,
     },
     executionTimeLambda: {
       title: 'Time to execute (single client, Lambda), not including coldstart (ms)',
       filename: 'lambda/execution-time',
+      noControlTest: true,
+    },
+
+    // STS
+    importSTS: {
+      title: 'Import / require STS (ms)',
+      filename: 'sts/import',
+      noControlTest: true,
+    },
+    instantiateSTS: {
+      title: 'Instantiate an STS client (ms)',
+      filename: 'sts/instantiate',
+      noControlTest: true,
+    },
+    readSTS: {
+      title: 'STS - read one identity (ms)',
+      filename: 'sts/read',
+      noControlTest: true,
+    },
+    executionTimeSTS: {
+      title: 'Time to execute (single client, STS), not including coldstart (ms)',
+      filename: 'sts/execution-time',
       noControlTest: true,
     },
 

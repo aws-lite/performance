@@ -90,5 +90,17 @@ export async function handler (event, context) {
       const { FunctionName, Description } = Lambda
       return await aws.Lambda.UpdateFunctionConfiguration({ FunctionName, Description: Description() })
     },
+
+    // STS
+    importSTS: async () => {
+      plugins.STS = await import('./aws-lite-sts-bundle.js')
+      return (await import('./aws-lite-client-bundle.js')).default
+    },
+    instantiateSTS: async (awsLite) => {
+      return await awsLite({ plugins: [ plugins.STS ] })
+    },
+    readSTS: async (aws) => {
+      return await aws.STS.GetCallerIdentity()
+    },
   }, context)
 }

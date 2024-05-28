@@ -90,5 +90,17 @@ exports.handler = async function handler (event, context) {
       const { FunctionName, Description } = Lambda
       return await LambdaClient.updateFunctionConfiguration({ FunctionName, Description: Description() }).promise()
     },
+
+    // STS
+    importSTS: async () => {
+      const sts = require('./aws-sdk-v2-sts-bundle.js')
+      return sts
+    },
+    instantiateSTS: async (sts) => {
+      return new sts()
+    },
+    readSTS: async (STSClient) => {
+      return await STSClient.getCallerIdentity().promise()
+    },
   }, context)
 }

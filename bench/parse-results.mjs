@@ -108,6 +108,19 @@ async function parseResults ({ results, region = 'us-west-2' }) {
   const executionTimeLambda = {}
   parseBenchRuns(executionTimeLambda, results, ({ importLambda, writeLambda }) => writeLambda.timeEnd - importLambda.timeStart, true)
 
+  // STS
+  const importSTS = {}
+  parseBenchRuns(importSTS, results, ({ importSTS }) => importSTS.time, true)
+
+  const instantiateSTS = {}
+  parseBenchRuns(instantiateSTS, results, ({ instantiateSTS }) => instantiateSTS.time, true)
+
+  const readSTS = {}
+  parseBenchRuns(readSTS, results, ({ readSTS }) => readSTS.time, true)
+
+  const executionTimeSTS = {}
+  parseBenchRuns(executionTimeSTS, results, ({ importSTS, readSTS }) => readSTS.timeEnd - importSTS.timeStart, true)
+
   // Aggregate
   const memory = {}
   parseBenchRuns(memory, results, ({ peakMemory }) => peakMemory)
@@ -154,6 +167,11 @@ async function parseResults ({ results, region = 'us-west-2' }) {
     readLambda,
     writeLambda,
     executionTimeLambda,
+    // STS
+    importSTS,
+    instantiateSTS,
+    readSTS,
+    executionTimeSTS,
     // Aggregate
     memory,
     executionTimeAll,

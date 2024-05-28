@@ -20,6 +20,7 @@ const services = [
   'iam',
   'cloudformation',
   'lambda',
+  'sts',
 ]
 const lambdae = names.concat('invoker')
 

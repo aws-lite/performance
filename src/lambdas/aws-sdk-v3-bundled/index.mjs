@@ -123,8 +123,8 @@ export async function handler (event, context) {
       commands.LambdaUpdateFunctionConfigurationCommand = UpdateFunctionConfigurationCommand
       return LambdaClient
     },
-    instantiateLambda: async (lambda) => {
-      return new lambda({})
+    instantiateLambda: async (LambdaClient) => {
+      return new LambdaClient({})
     },
     readLambda: async (client) => {
       const { FunctionName } = Lambda
@@ -134,6 +134,23 @@ export async function handler (event, context) {
     writeLambda: async (client) => {
       const { FunctionName, Description } = Lambda
       const command = new commands.LambdaUpdateFunctionConfigurationCommand({ FunctionName, Description: Description() })
+      return await client.send(command)
+    },
+
+    // STS
+    importSTS: async () => {
+      const {
+        STSClient,
+        GetCallerIdentityCommand,
+      } = await import('./aws-sdk-v3-sts-bundle.js')
+      commands.STSGetCallerIdentityCommand = GetCallerIdentityCommand
+      return STSClient
+    },
+    instantiateSTS: async (STSClient) => {
+      return new STSClient({})
+    },
+    readSTS: async (client) => {
+      const command = new commands.STSGetCallerIdentityCommand()
       return await client.send(command)
     },
   }, context)

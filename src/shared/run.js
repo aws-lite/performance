@@ -5,6 +5,7 @@ async function run (fns, context) {
     importIAM, instantiateIAM, readIAM, writeIAM,
     importCloudFormation, instantiateCloudFormation, readCloudFormation, writeCloudFormation,
     importLambda, instantiateLambda, readLambda, writeLambda,
+    importSTS, instantiateSTS, readSTS,
   } = fns
 
   let report = {
@@ -114,11 +115,24 @@ async function run (fns, context) {
   const LambdaResult = await writeLambda(LambdaClient)
   recordEnd('writeLambda')
 
+  // STS
+  recordStart('importSTS')
+  const STSSDK = await importSTS()
+  recordEnd('importSTS')
+
+  recordStart('instantiateSTS')
+  const STSClient = await instantiateSTS(STSSDK)
+  recordEnd('instantiateSTS')
+
+  recordStart('readSTS')
+  const STSResult = await readSTS(STSClient)
+  recordEnd('readSTS')
+
   // TODO add more clients + operations
 
   report.end = Date.now()
 
-  return { report, DynamoDBResult, S3Result, IAMResult, CloudFormationResult, LambdaResult }
+  return { report, DynamoDBResult, S3Result, IAMResult, CloudFormationResult, LambdaResult, STSResult }
 }
 
 const update = () => `Updated ${new Date().toISOString()}`
