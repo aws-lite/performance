@@ -24,7 +24,14 @@ const lambdae = names.concat('invoker')
 
 const plugin = {
   set: {
-    customLambdas: () => lambdae.map(name => ({ name, src: `src/lambdas/${name}` })),
+    customLambdas: () => {
+      const executing = lambdae.map(name => ({ name, src: `src/lambdas/${name}` }))
+      // Just point dummies to control src because it's super simple
+      const dummies = names
+        .filter(name => name !== 'control')
+        .map(name => ({ name: `dummy-${name}`, src: `src/lambdas/control` }))
+      return executing.concat(dummies)
+    },
   },
   deploy: {
     start: async ({ cloudformation, inventory }) => {
@@ -34,13 +41,19 @@ const plugin = {
           const stage = inventory.inv._arc.deployStage
           cloudformation.Resources[name].Properties.FunctionName = n(stage, item.ArcMetadata.name)
           cloudformation.Resources[name]
-            .Properties.Environment.Variables.PERFORMANCE_TABLE_NAME = {
+            .Properties.Environment.Variables.DUMMY_TABLE_NAME = {
               Ref: 'DummyDataTable',
             }
           cloudformation.Resources[name]
-            .Properties.Environment.Variables.PERFORMANCE_BUCKET_NAME = {
+            .Properties.Environment.Variables.DUMMY_BUCKET_NAME = {
               Ref: 'DummyAssetsBucket',
             }
+          if (name.startsWith('Aws')) {
+            cloudformation.Resources[name]
+              .Properties.Environment.Variables.DUMMY_LAMBDA_NAME = {
+                Ref: `Dummy${name}`,
+              }
+          }
         }
       }
 
@@ -71,7 +84,7 @@ const plugin = {
     copy: async ({ inventory }) => {
       for (const lambda of inventory.inv.customLambdas) {
         const { name } = lambda
-        if (name.includes('bundled')) {
+        if (name.includes('bundled') && !name.includes('dummy')) {
           const version = name.split('-bundled')[0]
           const outDir = join(cwd, 'src', 'lambdas', name)
           if (version === 'aws-lite') {

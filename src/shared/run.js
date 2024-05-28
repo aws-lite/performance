@@ -105,8 +105,10 @@ async function run (fns, context) {
 
 const update = () => `Updated ${new Date().toISOString()}`
 
-const TableName = process.env.PERFORMANCE_TABLE_NAME
-const Bucket = process.env.PERFORMANCE_BUCKET_NAME
+const Bucket = process.env.DUMMY_BUCKET_NAME
+const FunctionName = process.env.DUMMY_LAMBDA_NAME
+const TableName = process.env.DUMMY_TABLE_NAME
+
 const RoleName = 'aws-lite-dummy-iam-role'
 const StackName = 'aws-lite-dummy-stack'
 const StackParams = {
@@ -132,7 +134,8 @@ const StackParams = {
 module.exports = {
   run,
   DynamoDB:       { TableName,  Key: { id: 'data' } },
-  S3:             { Bucket,     Key: 'data' },
-  IAM:            { RoleName,   Description: update },
-  CloudFormation: { StackName,  Description: update, StackParams },
+  S3:             { Bucket,       Key: 'data' },
+  IAM:            { RoleName,     Description: update },
+  CloudFormation: { StackName,    Description: update, StackParams },
+  Lambda:         { FunctionName, Description: update },
 }

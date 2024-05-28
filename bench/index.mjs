@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { names } from '../src/plugins/lambdas.mjs'
 import seedData from './seed-data.mjs'
+import waitForUpdatedResources from './wait.mjs'
 import parseResults from './parse-results.mjs'
 import awsLite from '@aws-lite/client'
 
@@ -51,6 +52,8 @@ async function main () {
 
     const runStart = Date.now()
     console.log(`[Benchmark] Run ${i} of ${runs}`)
+
+    await waitForUpdatedResources({ aws, lambdae, n })
 
     const operations = lambdae.map(name => {
       return new Promise((res, rej) => {
