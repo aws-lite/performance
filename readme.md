@@ -27,71 +27,80 @@ This repo benchmarks and analyzes performance metrics from `aws-lite`, `aws-sdk`
 
 ## Latest performance metrics
 
-The performance metrics below represent timing and memory for a basic roundtrip operation in Lambda: coldstart / initialization > import SDK > instantiate a client > read a row from DynamoDB > write a row to DynamoDB > return metrics.
+The performance metrics below represent timing and memory for a basic roundtrip operation in Lambda:
+
+1. Coldstart / initialization
+2. Import SDK
+3. Instantiate SDK client
+4. Perform read operation
+5. Perform write operation (as needed)
+6. Return metrics
+
+Steps 2-5 are repeated sequentially for the various SDKs tested, currently: CloudFormation, DynamoDB, IAM, Lambda, S3, and STS.
 
 Each test Lambda has only and exactly what it requires to complete the benchmark run; all extraneous dependencies and operations are removed.
 
-Performance metrics are gathered on a regular basis to account for ongoing improvements to the SDKs (and, to a lesser extent, Lambda). Additional, more granular data will be published soon.
+Performance metrics are gathered on a regular basis to account for ongoing improvements to the SDKs (and, to a lesser extent, Lambda).
 
 <p align=center>
   <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - total time to respond, including coldstart" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/total-time-dark.png">
-    <img alt="Benchmark statistics - total time to respond, including coldstart" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/total-time.png">
+    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - total time to respond, including coldstart" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/aggregate/total-time-all-dark.png">
+    <img alt="Benchmark statistics - total time to respond, including coldstart" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/aggregate/total-time-all.png">
   </picture>
 </p>
 
 <p align=center>
   <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - coldstart latency" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/coldstart-dark.png">
-    <img alt="Benchmark statistics - coldstart latency" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/coldstart.png">
+    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - coldstart latency" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/startup/coldstart-dark.png">
+    <img alt="Benchmark statistics - coldstart latency" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/startup/coldstart.png">
+  </picture>
+</p>
+
+Note: import / require times are tied to individual services; in this example, only the DynamoDB service client is imported. **Usage of additional AWS services in your own business logic would necessitate additional imports, thereby compounding response latency.**
+
+<p align=center>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - import / require" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/dynamodb/import-dark.png">
+    <img alt="Benchmark statistics - import / require" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/dynamodb/import.png">
   </picture>
 </p>
 
 <p align=center>
   <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - import / require" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/import-dep-dark.png">
-    <img alt="Benchmark statistics - import / require" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/import-dep.png">
-  </picture>
-</p>
-
-Note: import / require times are tied to individual services; in this benchmark, only the DynamoDB service client is imported. **Usage of additional AWS services in your own business logic would necessitate additional imports, thereby compounding response latency.**
-
-<p align=center>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - instantiate a client" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/instantiate-dark.png">
-    <img alt="Benchmark statistics - instantiate a client" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/instantiate.png">
+    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - instantiate a client" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/dynamodb/instantiate-dark.png">
+    <img alt="Benchmark statistics - instantiate a client" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/dynamodb/instantiate.png">
   </picture>
 </p>
 
 <p align=center>
   <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - DynamoDB - read one 100KB row" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/read-dark.png">
-    <img alt="Benchmark statistics - DynamoDB - read one 100KB row" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/read.png">
+    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - DynamoDB - read one 100KB row" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/dynamodb/read-dark.png">
+    <img alt="Benchmark statistics - DynamoDB - read one 100KB row" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/dynamodb/read.png">
   </picture>
 </p>
 
 <p align=center>
   <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - DynamoDB - write one 100KB row" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/write-dark.png">
-    <img alt="Benchmark statistics - DynamoDB - write one 100KB row" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/write.png">
+    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - DynamoDB - write one 100KB row" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/dynamodb/write-dark.png">
+    <img alt="Benchmark statistics - DynamoDB - write one 100KB row" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/dynamodb/write.png">
   </picture>
 </p>
 
 <p align=center>
   <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - time to respond, not including coldstart" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/execution-time-dark.png">
-    <img alt="Benchmark statistics - time to respond, not including coldstart" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/execution-time.png">
+    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - time to respond, not including coldstart" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/dynamodb/execution-time-dark.png">
+    <img alt="Benchmark statistics - time to respond, not including coldstart" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/dynamodb/execution-time.png">
   </picture>
 </p>
 
 <p align=center>
   <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - peak memory consumption over Lambda baseline" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/memory-dark.png">
-    <img alt="Benchmark statistics - peak memory consumption over Lambda baseline" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/memory.png">
+    <source media="(prefers-color-scheme: dark)" alt="Benchmark statistics - peak memory consumption over Lambda baseline" srcset="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/aggregate/memory-dark.png">
+    <img alt="Benchmark statistics - peak memory consumption over Lambda baseline" src="https://performanceproduction-assetsbucket-1xqwku8953q8m.s3.us-west-2.amazonaws.com/aggregate/memory.png">
   </picture>
 </p>
 
-Note: peak memory consumption is shown as values above the Lambda Node.js baseline. Baseline memory consumption would be expected to include Node.js itself, Lambda bootstrap processes, etc. The memory baseline used always corresponds to the equivalent peak memory of the control test (e.g. `aws-lite` peak memory p95 - control peak memory p95).
+Note: peak memory consumption is shown as values above the Lambda Node.js baseline. Baseline memory consumption would be expected to include Node.js itself, Lambda bootstrap processes, etc. The memory baseline used always corresponds to the equivalent peak memory of the control test (e.g. `aws-lite` peak memory p95 - `control` peak memory p95).
 
 
 ### Download benchmark data
@@ -122,17 +131,17 @@ The process for benchmarking and processing performance metrics is run in the fo
 1. Prep - a clean CI environment is instantiated; the latest versions of key dependencies (e.g. `@aws-lite/client`, `@aws-sdk/client-dynamodb`, etc.) are installed; basic linting / tests are run
 2. Hydration - the following SDK dependency scenarios are prepared:
    1. Raw, installed - a raw, unbundled dependency will be used; for `@aws-lite/*`, that means the dependency will be installed and deployed with the code payload
-   2. Raw, provided - a raw, unbundled dependency provided with the Lambda container will be used (e.g. `@aws-sdk/*` in `nodejs20.x`); this dependency is included with the code payload
+   2. Raw, provided - a raw, unbundled dependency provided by the Lambda container will be used (e.g. `@aws-sdk/*` in `nodejs20.x`)
    3. Bundled - a bundled dependency will be used for comparison against the raw version; see [bundling](#bundling)
 3. Deployment - all scenario Lambdas (e.g. `control`, `aws-lite-raw`, etc.) are deployed via [`@architect/architect`](https://arc.codes) via AWS CloudFormation
 
 
 #### Testing phase
 
-1. Prep - a simple, flat 100KB row is written to the `results` DynamoDB database (if necessary)
+1. Prep - testing resources are created or updated as necessary, for example: a simple, flat 100KB row is written to the `dummy-data` DynamoDB database for DynamoDB client testing
 2. Force coldstart - publish an update to each scenario Lambda's environment variables, forcing a coldstart
 3. Lambda invoke - invoke the Lambda, which runs through its prescribed operations
-4. Failures - all runs from all scenario Lambdas are required to complete; if any single invocation fatally errors, does not complete, or coldstart data cannot be found, the entire process fails
+4. Failures - all runs from all scenario Lambdas are required to complete; if any single invocation fatally errors, does not complete, or coldstart data cannot be found, the entire process fails and is retried
 5. Writing results - results are written to a DynamoDB database for possible future use / research, as well as to a JSON file to be published to S3
 
 
