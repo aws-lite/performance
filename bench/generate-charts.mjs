@@ -6,6 +6,11 @@ import awsLite from '@aws-lite/client'
 const env = process.env.ARC_ENV === 'production' ? 'Production' : 'Staging'
 
 export default async function generateCharts ({ data, metricToGraph, region, runs }) {
+  if (process.argv.includes('--disable-charts')) {
+    console.log('[Charts] Skipping chart generation')
+    return
+  }
+
   console.log('[Charts] Generating charts')
 
   const tmp = join(process.cwd(), 'tmp')

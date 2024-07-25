@@ -10,6 +10,7 @@
   "bugs": "https://github.com/architect/aws-lite/issues",
   "scripts": {
     "bench": "node bench/index.mjs",
+    "bench:disablecharts": "node bench/index.mjs --disable-charts",
     "lint": "eslint --fix .",
     "start": "arc sandbox",
     "test": "npm run lint"

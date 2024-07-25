@@ -42,7 +42,8 @@ async function main () {
   const ts = new Date().toISOString()
   const start = Date.now()
   // Allow for `npm run bench $sdk...`
-  const lambdae = process.argv[2]
+  const ignored = [ '--disable-charts' ]
+  const lambdae = process.argv.filter(a => !ignored.includes(a))[2]
     ? [ names[0], ...process.argv.slice(2) ]
     : names
 
@@ -94,6 +95,16 @@ async function main () {
               console.log('Retrying...')
               return bench(true)
             }
+
+            // Check for unusually slow operations
+            for (let data of Object.keys(run)) {
+              if (run[data]?.time > 1500) {
+                console.log(`[Benchmark] Detected unusually slow operation at ${new Date(run[data].timeStart).toISOString()}:`)
+                console.log(`${name} > ${run.id} > ${data}`)
+                console.log(run[data])
+              }
+            }
+
             stats[name].push(run)
             res()
           }
