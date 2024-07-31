@@ -1,6 +1,6 @@
 {
   "name": "@aws-lite/performance",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Generates and publishes performance metrics for JavaScript AWS SDKs",
   "homepage": "https://github.com/aws-lite/performance",
   "repository": {
